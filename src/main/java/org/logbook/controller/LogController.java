@@ -21,11 +21,7 @@ public class LogController {
             @PathVariable String type,
             @RequestParam(required = false, defaultValue = "0") long quantity,
             @RequestParam(required = false, defaultValue = "reps") String unit) {
-        try {
-            ActivityType activityType = ActivityType.fromValue(type);
-            return ResponseEntity.ok(activityLogService.logActivity(activityType, quantity, unit));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        ActivityType activityType = ActivityType.fromValue(type);
+        return ResponseEntity.ok(activityLogService.logActivity(activityType, quantity, unit));
     }
 }
