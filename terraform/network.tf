@@ -9,7 +9,7 @@ data "aws_availability_zones" "available" {
 resource "aws_subnet" "public" {
   count                   = 2
   vpc_id                  = data.aws_vpc.default.id
-  cidr_block              = "10.0.${count.index}.0/24"
+  cidr_block              = "172.31.${count.index}.0/24"
   availability_zone       = element(data.aws_availability_zones.available.names, count.index)
   map_public_ip_on_launch = true
   tags = {
@@ -78,4 +78,8 @@ output "vpc_id" {
 
 output "public_subnets" {
   value = aws_subnet.public[*].id
+}
+
+output "vpc_cidr_block" {
+  value = data.aws_vpc.default.cidr_block
 }

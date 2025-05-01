@@ -1,19 +1,19 @@
 resource "aws_ecr_repository" "logbook" {
   name = "logbook-repository"
 }
-
-resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
-}
+#
+# resource "aws_vpc" "main" {
+#   cidr_block = "10.0.0.0/16"
+# }
 
 resource "aws_security_group" "ecs_security_group" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = data.aws_vpc.default.id
 }
 
 resource "aws_security_group" "ecs_service" {
   name        = "ecs_service_sg"
   description = "Security group for ECS service"
-  vpc_id      = aws_vpc.main.id  # Ensure this matches the VPC ID used for subnets
+  vpc_id      = data.aws_vpc.default.id  # Ensure this matches the VPC ID used for subnets
 }
 
 resource "aws_ecs_cluster" "main" {
@@ -63,7 +63,7 @@ resource "aws_ecs_service" "logbook_service" {
 
   network_configuration {
     subnets         = aws_subnet.public[*].id
-    security_groups = [aws_vpc.main.id]
+    security_groups = [aws_security_group.ecs_security_group.id]
     assign_public_ip = true  # <--- This is key
   }
 
@@ -149,4 +149,12 @@ resource "aws_iam_role_policy_attachment" "ecs_task_logging_attachment" {
 resource "aws_cloudwatch_log_group" "logbook" {
   name              = "/ecs/logbook"
   retention_in_days = 30
+}
+
+output "subnet_vpc_ids" {
+  value = aws_subnet.public[*].vpc_id
+}
+
+output "sg_vpc_id" {
+  value = aws_security_group.ecs_security_group.vpc_id
 }
