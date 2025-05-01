@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-dockerize:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:15
