@@ -1,13 +1,60 @@
 resource "aws_ecr_repository" "logbook" {
   name = "logbook-repository"
 }
-#
-# resource "aws_vpc" "main" {
-#   cidr_block = "10.0.0.0/16"
-# }
+
+resource "aws_lb" "logbook_alb" {
+  name               = "logbook-alb"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = aws_subnet.public[*].id
+  security_groups    = [aws_security_group.alb_sg.id]
+}
+
+resource "aws_lb_target_group" "logbook_tg" {
+  name        = "logbook-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = data.aws_vpc.default.id
+  target_type = "ip"
+  health_check {
+    path                = "/actuator/health"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = "200-399"
+  }
+}
+
+resource "aws_lb_listener" "logbook_listener" {
+  load_balancer_arn = aws_lb.logbook_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.logbook_tg.arn
+  }
+}
 
 resource "aws_security_group" "ecs_security_group" {
-  vpc_id = data.aws_vpc.default.id
+  name        = "ecs-sg"
+  description = "Allow inbound from ALB"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]  # only allow traffic from ALB SG
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_security_group" "ecs_service" {
