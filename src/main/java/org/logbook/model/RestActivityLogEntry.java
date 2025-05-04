@@ -19,9 +19,9 @@ public class RestActivityLogEntry {
         return RestActivityLogEntry.builder()
                 .type(entry.getType().getValue())
                 .quantity(entry.getQuantity())
-                .timestamp(entry.getTimestamp())
+                .timestamp(entry.getTimestamp_utc().toEpochMilli())
                 // TODO Date or Time so that we can do by hour or week or something
-                .localeDate(LocalDate.ofEpochDay(entry.getTimestamp()))
+                .localeDate(LocalDate.ofEpochDay(entry.getTimestamp_utc().toEpochMilli()))
                 .build();
     }
 }

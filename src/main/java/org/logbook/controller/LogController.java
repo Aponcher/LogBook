@@ -1,7 +1,6 @@
 package org.logbook.controller;
 
 import lombok.AllArgsConstructor;
-import org.logbook.model.ActivityLogEntry;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityLogEntry;
 import org.logbook.service.ActivityLogService;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 
 @RestController
@@ -18,6 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 @CrossOrigin(origins = "*") // loosen later for prod
 public class LogController {
+
+    public static String USER_ID = "aponcher"; // TODO move to a table w/ metadata or similar
 
     private final ActivityLogService activityLogService;
 
@@ -55,7 +55,7 @@ public class LogController {
         }
         return ResponseEntity.of(
                 activityLogService.getActivityLogsForType(
-                        type, start, end));
+                        ActivityType.fromValue(type), start, end, USER_ID));
     }
 
     /**
@@ -71,9 +71,8 @@ public class LogController {
      * @param type Type of activity log to retrieve
      * @param start Timestamp of the start of the time range
      * @param end Timestamp of the end of the time range
-     * @return
+     * @return timeseries data for rendering in Highcharts
      */
-
     @GetMapping("/{type}/timeSeriesData")
     public ResponseEntity<List<RestActivityLogEntry>> getTimeSeriesActivityLogsForType(
             @PathVariable String type,
@@ -95,7 +94,7 @@ public class LogController {
 
         return ResponseEntity.of(
                 activityLogService.getActivityLogsForType(
-                        type, start, end));
+                        ActivityType.fromValue(type), start, end, USER_ID));
     }
 
     // TODO highchartsTimeSeriesData('type', 'start', 'end', 'interval')

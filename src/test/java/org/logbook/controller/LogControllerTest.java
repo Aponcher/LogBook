@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.logbook.controller.LogController.USER_ID;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -101,11 +102,11 @@ class LogControllerTest {
 
     @Test
     void getLogs_withStartAndEnd_returns200() throws Exception {
-        String type = ActivityType.PUSHUPS.getValue();
+        ActivityType type = ActivityType.PUSHUPS;
         Instant end = Instant.now();
         Instant start = end.minus(Duration.ofDays(5));
 
-        when(service.getActivityLogsForType(type, start, end))
+        when(service.getActivityLogsForType(type, start, end, USER_ID))
                 .thenReturn(sampleResponse());
 
         mockMvc.perform(get("/log/{type}", type)
@@ -113,44 +114,44 @@ class LogControllerTest {
                         .param("end", end.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].type").value(type));
+                .andExpect(jsonPath("$[0].type").value(type.getValue()));
     }
 
     @Test
     void getLogs_withoutStart_usesDefaultStart_returns200() throws Exception {
-        String type = ActivityType.PUSHUPS.getValue();
+        ActivityType type = ActivityType.PUSHUPS;
         Instant end = Instant.now();
 
-        when(service.getActivityLogsForType(eq(type), any(), eq(end)))
+        when(service.getActivityLogsForType(eq(type), any(), eq(end), eq(USER_ID)))
                 .thenReturn(sampleResponse());
 
         mockMvc.perform(get("/log/{type}", type)
                         .param("end", end.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].type").value(type));
+                .andExpect(jsonPath("$[0].type").value(type.getValue()));
     }
 
     @Test
     void getLogs_withoutEnd_usesNowAsEnd_returns200() throws Exception {
-        String type = ActivityType.PUSHUPS.getValue();
+        ActivityType type = ActivityType.PUSHUPS;
         Instant start = Instant.now().minus(Duration.ofDays(7));
 
-        when(service.getActivityLogsForType(eq(type), eq(start), any()))
+        when(service.getActivityLogsForType(eq(type), eq(start), any(), eq(USER_ID)))
                 .thenReturn(sampleResponse());
 
         mockMvc.perform(get("/log/{type}", type)
                         .param("start", start.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].type").value(type));
+                .andExpect(jsonPath("$[0].type").value(type.getValue()));
     }
 
     @Test
     void getLogs_withNoResults_returnsEmptyList() throws Exception {
-        String type = ActivityType.PUSHUPS.getValue();
+        ActivityType type = ActivityType.PUSHUPS;
         Instant end = Instant.now().minus(Duration.ofDays(29));
         Instant start = end.minus(Duration.ofDays(1));
 
-        when(service.getActivityLogsForType(type, start, end))
+        when(service.getActivityLogsForType(type, start, end, USER_ID))
                 .thenReturn(Optional.of(List.of()));
 
         mockMvc.perform(get("/log/{type}", type)

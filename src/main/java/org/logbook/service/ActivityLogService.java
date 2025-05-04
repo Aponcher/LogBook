@@ -30,9 +30,9 @@ public class ActivityLogService {
     }
 
     public Optional<List<RestActivityLogEntry>> getActivityLogsForType(
-            String type, Instant start, Instant end) {
+            ActivityType type, Instant start, Instant end, String userId) {
         return Optional.of(
-                activityLogEntryRepository.findByActivityTypeAndTimeRange(type, start, end)
+                activityLogEntryRepository.findByActivityTypeAndTimeRange(type, start, end, userId)
                 .stream()
                 .map(RestActivityLogEntry::fromActivityLogEntry)
                 .toList());

@@ -32,32 +32,55 @@ public class ActivityLogEntry {
 
     private String unit;
 
-    private long timestamp;
+    private String timestamp;
 
     private Instant timestamp_utc;
 
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    // TODO maybe combine these constructors somehow
     public ActivityLogEntry() {
         Instant ts = Instant.now();
-        this.timestamp = ts.toEpochMilli();
+        this.timestamp = ts.toString();
         this.timestamp_utc = ts;
+        this.type = ActivityType.HEALTH_EVALUATION;
+        this.quantity = 5;
+        this.unit = "score";
+        this.userId = "test-user";
     }
 
     public ActivityLogEntry(ActivityType type, long quantity) {
         Instant ts = Instant.now();
-        this.timestamp = ts.toEpochMilli();
+        this.timestamp = ts.toString();
         this.timestamp_utc = ts;
         this.type = type;
         this.quantity = quantity;
         this.unit = "reps";
+        this.userId = "test-user";
     }
 
     public ActivityLogEntry(ActivityType type, long quantity, String unit) {
         Instant ts = Instant.now();
-        this.timestamp = ts.toEpochMilli();
+        this.timestamp = ts.toString();
         this.timestamp_utc = ts;
         this.type = type;
         this.quantity = quantity;
         this.unit = unit;
+        this.userId = "test-user";
+    }
+
+    public ActivityLogEntry(ActivityType type,
+                            long quantity,
+                            String unit,
+                            String userId) {
+        Instant ts = Instant.now();
+        this.timestamp = ts.toString();
+        this.timestamp_utc = ts;
+        this.type = type;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.userId = userId;
     }
 
 }

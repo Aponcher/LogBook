@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @Transactional
 @Tag("integration")
 @Rollback
@@ -44,10 +44,12 @@ class ActivityLogEntryRepositoryIntegrationTest {
         Instant end = Instant.now();
         Instant start = end.minus(Duration.ofHours(2));
         List<ActivityLogEntry> savedPushups =
-                logbookRepository.findByActivityTypeAndTimeRange(ActivityType.PUSHUPS.getValue(), start, end);
+                logbookRepository.findByActivityTypeAndTimeRange(ActivityType.PUSHUPS, start, end, "test-user");
 
+        List<ActivityLogEntry> savedSitups =
+                logbookRepository.findByActivityTypeAndTimeRange(ActivityType.SITUPS, start, end, "test-user");
         assertEquals(3, savedPushups.size());
-        assertEquals(2, logbookRepository.findByActivityTypeAndTimeRange(ActivityType.SITUPS.getValue(), start, end));
+        assertEquals(2, savedSitups.size());
     }
 
 }
