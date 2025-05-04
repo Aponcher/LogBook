@@ -1,49 +1,50 @@
-name: Terraform Infrastructure
+name: Infrastructure
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
-
-env:
-  AWS_REGION: us-east-2
+    branches: [ main ]
 
 jobs:
   terraform:
-    name: Terraform Plan / Apply
+    name: Provision Infra
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: infra
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Set up JDK 21 (for Maven)
+        uses: actions/setup-java@v3
         with:
-          terraform_version: 1.5.7
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          java-version: '21'
+          distribution: 'temurin'
 
       - name: Extract version from POM
         id: get_version
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "app_version=\"$VERSION\"" > app.auto.tfvars
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
 
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Plan (PR)
-        if: github.event_name == 'pull_request'
-        run: terraform plan
+      - name: Terraform Validate
+        run: terraform validate
 
-      - name: Terraform Apply (main)
+      - name: Terraform Plan
+        run: terraform plan -var="app_version=${{ steps.get_version.outputs.version }}"
+
+      - name: Terraform Apply (main only)
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -var="app_version=${{ steps.get_version.outputs.version }}"
