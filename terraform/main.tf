@@ -104,7 +104,7 @@ resource "aws_ecs_task_definition" "logbook" {
         },
         {
           name  = "SPRING_DATASOURCE_URL"
-          value = "jdbc:postgresql://${aws_db_instance.logbook_db.endpoint}:5432/logbook"
+          value = "jdbc:postgresql://${aws_db_instance.logbook_db.endpoint}:5432/logbookdata"
         },
         {
           name  = "SPRING_DATASOURCE_USERNAME"
