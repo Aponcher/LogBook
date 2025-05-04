@@ -97,6 +97,24 @@ resource "aws_ecs_task_definition" "logbook" {
           awslogs-stream-prefix = "ecs"
         }
       }
+      environment = [
+        {
+          name  = "SPRING_PROFILES_ACTIVE"
+          value = "dev"
+        },
+        {
+          name  = "SPRING_DATASOURCE_URL"
+          value = "jdbc:postgresql://${aws_db_instance.logbook_db.endpoint}:5432/logbook"
+        },
+        {
+          name  = "SPRING_DATASOURCE_USERNAME"
+          value = "postgres"
+        },
+        {
+          name  = "SPRING_DATASOURCE_PASSWORD"
+          value = "changeme123"
+        }
+      ]
     }
   ])
 }

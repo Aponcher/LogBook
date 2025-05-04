@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,17 +32,55 @@ public class ActivityLogEntry {
 
     private String unit;
 
-    private LocalDateTime timestamp;
+    private String timestamp;
 
+    private Instant timestamp_utc;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    // TODO maybe combine these constructors somehow
     public ActivityLogEntry() {
-        this.timestamp = LocalDateTime.now();
+        Instant ts = Instant.now();
+        this.timestamp = ts.toString();
+        this.timestamp_utc = ts;
+        this.type = ActivityType.HEALTH_EVALUATION;
+        this.quantity = 5;
+        this.unit = "score";
+        this.userId = "test-user";
+    }
+
+    public ActivityLogEntry(ActivityType type, long quantity) {
+        Instant ts = Instant.now();
+        this.timestamp = ts.toString();
+        this.timestamp_utc = ts;
+        this.type = type;
+        this.quantity = quantity;
+        this.unit = "reps";
+        this.userId = "test-user";
     }
 
     public ActivityLogEntry(ActivityType type, long quantity, String unit) {
+        Instant ts = Instant.now();
+        this.timestamp = ts.toString();
+        this.timestamp_utc = ts;
         this.type = type;
         this.quantity = quantity;
         this.unit = unit;
-        this.timestamp = LocalDateTime.now();
+        this.userId = "test-user";
+    }
+
+    public ActivityLogEntry(ActivityType type,
+                            long quantity,
+                            String unit,
+                            String userId) {
+        Instant ts = Instant.now();
+        this.timestamp = ts.toString();
+        this.timestamp_utc = ts;
+        this.type = type;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.userId = userId;
     }
 
 }
