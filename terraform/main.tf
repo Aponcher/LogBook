@@ -10,6 +10,11 @@ resource "aws_lb" "logbook_alb" {
   security_groups    = [aws_security_group.alb_sg.id]
 }
 
+output "alb_dns_name" {
+  description = "Public DNS name of the Application Load Balancer"
+  value       = aws_lb.logbook_alb.dns_name
+}
+
 resource "aws_lb_target_group" "logbook_tg" {
   name        = "logbook-tg"
   port        = 8080
