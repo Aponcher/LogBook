@@ -99,8 +99,8 @@ jobs:
       - name: Push to Amazon ECR
         if: env.IS_MAIN_OR_TAG == 'true'
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG }}
+          docker push ${{ steps.login-ecr.outputs.registry }}/logbook-repository:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/logbook-repository:${{ env.DOCKER_TAG }}
 
       ### ---- Optional Slack Notification Placeholder ----
       # - name: Notify Slack
