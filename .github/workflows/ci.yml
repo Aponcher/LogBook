@@ -121,6 +121,17 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:latest
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:v${{ env.VERSION }}
 
+      # Post-release version bump
+      - name: Bump version post-release
+        if: github.ref == 'refs/heads/main'
+        run: |
+          CURRENT=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          NEXT=$(echo $CURRENT | awk -F. '{$NF += 1; print $1 "." $2 "." $3 "-SNAPSHOT"}')
+          mvn versions:set -DnewVersion=$NEXT -DgenerateBackupPoms=false
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git commit -am "Bump version to $NEXT"
+          git push origin main
 
       ### ---- Optional Slack Notification Placeholder ----
       # - name: Notify Slack
