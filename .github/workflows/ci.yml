@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [ main, dev ]
+    tags:
+      - 'v*.*.*'
   pull_request:
     branches: [ main ]
 
@@ -24,6 +26,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+    env:
+      # Define condition for main or tag push
+      IS_MAIN_OR_TAG: ${{ github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')) }}
 
     steps:
       - name: Checkout repository
@@ -47,18 +53,31 @@ jobs:
         run: mvn clean verify
 
       - name: Log in to Docker Hub
+        if: env.IS_MAIN_OR_TAG == 'true'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and tag Docker image
+        if: env.IS_MAIN_OR_TAG == 'true'
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest .
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG=${GITHUB_REF##*/}
+            docker tag ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest ${{ secrets.DOCKER_USERNAME }}/logbook-app:$TAG
+          fi
 
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/logbook-app .
-
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/logbook-app
+      - name: Push to Docker Hub
+        if: env.IS_MAIN_OR_TAG == 'true'
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG=${GITHUB_REF##*/}
+            docker push ${{ secrets.DOCKER_USERNAME }}/logbook-app:$TAG
+          fi
 
       - name: Configure AWS credentials
+        if: env.IS_MAIN_OR_TAG == 'true'
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -66,14 +85,23 @@ jobs:
           aws-region: us-east-2
 
       - name: Log in to Amazon ECR
+        if: env.IS_MAIN_OR_TAG == 'true'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build Docker image
+      - name: Build and tag for ECR
+        if: env.IS_MAIN_OR_TAG == 'true'
         run: |
-          docker build -t logbook .
-          docker tag logbook:latest ${{ steps.login-ecr.outputs.registry }}/logbook-repository:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest ${{ steps.login-ecr.outputs.registry }}/logbook-repository:latest
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG=${GITHUB_REF##*/}
+            docker tag ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest ${{ steps.login-ecr.outputs.registry }}/logbook-repository:$TAG
 
-      - name: Push image to ECR
+      - name: Push to ECR
+        if: env.IS_MAIN_OR_TAG == 'true'
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/logbook-repository:latest
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG=${GITHUB_REF##*/}
+            docker push ${{ steps.login-ecr.outputs.registry }}/logbook-repository:$TAG
+          fi
