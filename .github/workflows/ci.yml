@@ -9,7 +9,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-dockerize:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     services:
@@ -28,11 +28,9 @@ jobs:
           --health-retries 5
 
     env:
-      # Define condition for main or tag push
       IS_MAIN_OR_TAG: ${{ github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')) }}
-      IMAGE_NAME: logbook-repository
-      REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      IMAGE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+      IMAGE_NAME: logbook-app
+      DOCKER_TAG: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
 
     steps:
       - name: Checkout repository
@@ -52,8 +50,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Build with Maven
+      - name: Build and run tests
         run: mvn clean verify
+
+      ### ---- Docker Hub ----
 
       - name: Log in to Docker Hub
         if: env.IS_MAIN_OR_TAG == 'true'
@@ -65,20 +65,16 @@ jobs:
       - name: Build and tag Docker image
         if: env.IS_MAIN_OR_TAG == 'true'
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest .
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            TAG=${GITHUB_REF##*/}
-            docker tag ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest ${{ secrets.DOCKER_USERNAME }}/logbook-app:$TAG
-          fi
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG }}
 
       - name: Push to Docker Hub
         if: env.IS_MAIN_OR_TAG == 'true'
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/logbook-app:latest
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            TAG=${GITHUB_REF##*/}
-            docker push ${{ secrets.DOCKER_USERNAME }}/logbook-app:$TAG
-          fi
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG }}
+
+      ### ---- Amazon ECR ----
 
       - name: Configure AWS credentials
         if: env.IS_MAIN_OR_TAG == 'true'
@@ -93,25 +89,27 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build and tag for ECR
+      - name: Build and tag for Amazon ECR
         if: env.IS_MAIN_OR_TAG == 'true'
         run: |
-          docker build -t logbook-app:latest .
-          docker tag logbook-app:latest ${{ steps.login-ecr.outputs.registry }}/logbook-repository:latest
+          docker build -t ${{ env.IMAGE_NAME }}:latest .
+          docker tag ${{ env.IMAGE_NAME }}:latest ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.IMAGE_NAME }}:latest ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG }}
 
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            TAG=${GITHUB_REF##*/}
-            docker tag logbook-app:latest ${{ steps.login-ecr.outputs.registry }}/logbook-repository:$TAG
-          fi
-
-      - name: Tag image with commit SHA or release tag
+      - name: Push to Amazon ECR
         if: env.IS_MAIN_OR_TAG == 'true'
         run: |
-          docker tag logbook-app:latest $REGISTRY/$IMAGE_NAME:latest
-          docker tag logbook-app:latest $REGISTRY/$IMAGE_NAME:${{ env.IMAGE_TAG }}
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG }}
 
-      - name: Push images to ECR
-        if: env.IS_MAIN_OR_TAG == 'true'
-        run: |
-          docker push $REGISTRY/$IMAGE_NAME:latest
-          docker push $REGISTRY/$IMAGE_NAME:${{ env.IMAGE_TAG }}
+      ### ---- Optional Slack Notification Placeholder ----
+      # - name: Notify Slack
+      #   if: failure() || success()
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": "Deployment status: ${{ job.status }} for ${{ github.ref }}"
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
