@@ -17,7 +17,7 @@ import java.util.List;
 @CrossOrigin(origins = "*") // loosen later for prod
 public class LogController {
 
-    public static String USER_ID = "aponcher"; // TODO move to a table w/ metadata or similar
+    public static String USER_ID = "test-user"; // TODO move to a table w/ metadata or similar
 
     private final ActivityLogService activityLogService;
 
