@@ -1,3 +1,8 @@
+variable "app_version" {
+  description = "App version"
+  default     = "latest"
+}
+
 variable "region" {
   description = "AWS region"
   default     = "us-east-2"
