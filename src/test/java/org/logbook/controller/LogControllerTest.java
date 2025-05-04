@@ -3,6 +3,7 @@ package org.logbook.controller;
 import org.junit.jupiter.api.Test;
 import org.logbook.model.ActivityLogEntry;
 import org.logbook.model.ActivityType;
+import org.logbook.model.RestActivityLogEntry;
 import org.logbook.service.ActivityLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,8 +30,13 @@ class LogControllerTest {
     // Happy Path
     @Test
     void testLogPushups() throws Exception {
-        ActivityLogEntry mockLog = new ActivityLogEntry(ActivityType.PUSHUPS, 10, "reps");
-        mockLog.setId(UUID.randomUUID());
+        RestActivityLogEntry mockLog =
+                RestActivityLogEntry.builder()
+                        .type(ActivityType.PUSHUPS.getValue())
+                        .quantity(10)
+                        .unit("reps")
+                        .build();
+                new ActivityLogEntry(ActivityType.PUSHUPS, 10, "reps");
 
         when(service.logActivity(any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
@@ -46,8 +52,12 @@ class LogControllerTest {
     // Happy path: sleep
     @Test
     void testLogSleep() throws Exception {
-        ActivityLogEntry mockLog = new ActivityLogEntry(ActivityType.SLEEP, 3, "hours");
-        mockLog.setId(UUID.randomUUID());
+        RestActivityLogEntry mockLog =
+                RestActivityLogEntry.builder()
+                .type(ActivityType.SLEEP.getValue())
+                .quantity(3)
+                .unit("hours")
+                .build();
 
         when(service.logActivity(any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
@@ -59,12 +69,14 @@ class LogControllerTest {
                 .andExpect(jsonPath("$.unit").value("hours"));
     }
 
-    // Meh Path: Missing required param could still be an activity we want to log but of specific types
-    // like ATE or something TODO make some sort of ENUM
+    // MEH Path: Missing required param could still be an activity we want to log but of specific types
     @Test
     void testLogEmptyRequest() throws Exception {
-        ActivityLogEntry mockLog = new ActivityLogEntry(ActivityType.ATE, 0, "reps");
-        mockLog.setId(UUID.randomUUID());
+        RestActivityLogEntry mockLog = RestActivityLogEntry.builder()
+                .type(ActivityType.ATE.getValue())
+                .quantity(0L)
+                .unit("reps")
+                .build();
 
         when(service.logActivity(any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
@@ -77,7 +89,6 @@ class LogControllerTest {
 
     @Test
     void testLogBadRequestType() throws Exception {
-
         mockMvc.perform(post("/log/badType"))
                 .andExpect(status().isBadRequest());
     }

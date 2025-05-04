@@ -38,3 +38,30 @@ public class ActivityLogService {
                 .toList());
     }
 }
+
+
+//public RestChartOptions buildTimeSeriesChart(String activityType, Instant start, Instant end) {
+//        List<LogEntry> logs = logEntryRepository.findByActivityTypeAndTimeRange(activityType, start, end);
+//
+//        List<String> categories = logs.stream()
+//            .map(entry -> entry.getTimestamp().toString()) // or format as "MM-dd"
+//            .toList();
+//
+//        List<Integer> values = logs.stream()
+//            .map(LogEntry::getValue)
+//            .toList();
+//
+//        RestChartOptions chart = new RestChartOptions();
+//        chart.setTitle("Activity Over Time");
+//        chart.setType("line");
+//        chart.setCategories(categories);
+//        chart.setSeries(List.of(Map.of(
+//            "name", activityType,
+//            "data", values
+//        )));
+//        chart.setChart(Map.of("type", "line"));
+//        chart.setXAxis(Map.of("categories", categories));
+//        chart.setYAxis(Map.of("title", Map.of("text", "Count")));
+//
+//        return chart;
+//    }
