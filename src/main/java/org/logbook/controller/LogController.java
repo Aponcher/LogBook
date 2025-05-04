@@ -101,4 +101,6 @@ public class LogController {
     // TODO highchartsTimeSeriesData('type', 'start', 'end', 'interval')
 
     // TODO log free form log (OpenSearch so we can fuzy search and such)
+
+    // TODO Angular Gauges (speedometer) pushups/situps daily goal ?
 }
