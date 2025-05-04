@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main, dev ]
@@ -117,3 +120,16 @@ jobs:
           docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:v${{ env.VERSION }}
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:latest
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:v${{ env.VERSION }}
+
+
+      ### ---- Optional Slack Notification Placeholder ----
+      # - name: Notify Slack
+      #   if: failure() || success()
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": "Deployment status: ${{ job.status }} for ${{ github.ref }}"
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
