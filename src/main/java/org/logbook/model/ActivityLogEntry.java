@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,17 +32,23 @@ public class ActivityLogEntry {
 
     private String unit;
 
-    private LocalDateTime timestamp;
+    private long timestamp;
+
+    private Instant timestamp_utc;
 
     public ActivityLogEntry() {
-        this.timestamp = LocalDateTime.now();
+        Instant ts = Instant.now();
+        this.timestamp = ts.toEpochMilli();
+        this.timestamp_utc = ts;
     }
 
     public ActivityLogEntry(ActivityType type, long quantity, String unit) {
+        Instant ts = Instant.now();
+        this.timestamp = ts.toEpochMilli();
+        this.timestamp_utc = ts;
         this.type = type;
         this.quantity = quantity;
         this.unit = unit;
-        this.timestamp = LocalDateTime.now();
     }
 
 }
