@@ -42,6 +42,15 @@ public class ActivityLogEntry {
         this.timestamp_utc = ts;
     }
 
+    public ActivityLogEntry(ActivityType type, long quantity) {
+        Instant ts = Instant.now();
+        this.timestamp = ts.toEpochMilli();
+        this.timestamp_utc = ts;
+        this.type = type;
+        this.quantity = quantity;
+        this.unit = "reps";
+    }
+
     public ActivityLogEntry(ActivityType type, long quantity, String unit) {
         Instant ts = Instant.now();
         this.timestamp = ts.toEpochMilli();
