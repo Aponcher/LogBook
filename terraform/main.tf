@@ -96,7 +96,7 @@ resource "aws_ecs_task_definition" "logbook" {
   container_definitions = jsonencode([
     {
       name      = "logbook"
-      image     = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/logbook-repository:${var.app_version}"
+      image     = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/logbook-repository:v${var.app_version}"
       essential = true
       memory    = 1024
       cpu       = 512
