@@ -2,6 +2,18 @@ resource "aws_ecr_repository" "logbook" {
   name = "logbook-repository"
 }
 
+terraform {
+  required_version = ">= 1.3"
+
+  backend "remote" {
+    organization = "logbook-org"
+
+    workspaces {
+      name = "logbook-infra"
+    }
+  }
+}
+
 resource "aws_lb" "logbook_alb" {
   name               = "logbook-alb"
   internal           = false
