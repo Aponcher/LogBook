@@ -26,8 +26,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build project (to resolve version)
-        run: mvn clean verify
+      - name: Mvn install (to resolve version)
+        run: mvn install
 
       - name: Extract version from POM
         id: get_version
