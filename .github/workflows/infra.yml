@@ -34,7 +34,7 @@ jobs:
         run: echo "Using app_version=$VERSION"
 
       - name: Write app version to tfvars file
-        run: echo "app_version = \"${{ env.VERSION }}\"" > terraform/app_version.auto.tfvars
+        run: echo "app_version = \"${{ env.VERSION }}\"" > terraform/terraform.tfvars
 
       - name: Terraform Init
         run: terraform init -input=false

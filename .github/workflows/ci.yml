@@ -134,6 +134,13 @@ jobs:
           git commit -am "Bump version to $NEXT"
           git push origin main
 
+      - name: Force ECS new deployment
+        run: |
+          aws ecs update-service \
+            --cluster logbook-cluster \
+            --service logbook-service \
+            --force-new-deployment \
+            --region us-east-2
       ### ---- Optional Slack Notification Placeholder ----
       # - name: Notify Slack
       #   if: failure() || success()
