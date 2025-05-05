@@ -44,6 +44,9 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check
 
+      - name: Print tfvars
+        run: cat terraform/terraform.tfvars
+
       - name: Terraform Plan
         run: terraform plan -input=false
         env:
