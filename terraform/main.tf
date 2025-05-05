@@ -137,11 +137,12 @@ resource "aws_ecs_task_definition" "logbook" {
 }
 
 resource "aws_ecs_service" "logbook_service" {
-  name            = "logbook-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.logbook.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                 = "logbook-service"
+  cluster              = aws_ecs_cluster.main.id
+  task_definition      = aws_ecs_task_definition.logbook.arn
+  desired_count        = 1
+  launch_type          = "FARGATE"
+  force_new_deployment = true
 
   network_configuration {
     subnets          = aws_subnet.public[*].id
