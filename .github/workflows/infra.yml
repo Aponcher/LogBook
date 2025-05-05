@@ -10,9 +10,6 @@ jobs:
   terraform:
     name: 'Terraform Plan/Apply'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./terraform
 
     steps:
       - name: Checkout repository
@@ -40,24 +37,35 @@ jobs:
         run: echo "app_version = \"${{ env.VERSION }}\"" > app_version.auto.tfvars
 
       - name: Terraform Init
-        run: terraform init -input=false
+        run: |
+          cd terraform
+          terraform init -input=false
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Format Check
-        run: terraform fmt -check
+        run: |
+          cd terraform
+          terraform fmt -check
 
       - name: Print tfvars
-        run: cat terraform/terraform.tfvars
+        run: |
+          cd terraform
+          cat terraform.tfvars
+          cat app_version.auto.tfvars
 
       - name: Terraform Plan
-        run: terraform plan -input=false
+        run: |
+          cd terraform
+          terraform plan -input=false
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve
+        run: |
+          cd terraform
+          terraform apply -auto-approve
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
