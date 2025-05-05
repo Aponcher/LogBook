@@ -26,7 +26,8 @@ jobs:
       - name: Extract version from POM
         id: get_version
         run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Ev '(^\[|Download\w+:)')
+          echo "VERSION=$VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Show version
