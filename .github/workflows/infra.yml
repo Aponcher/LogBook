@@ -23,6 +23,9 @@ jobs:
         with:
           terraform_version: 1.5.7  # or your desired version
 
+      - name: Build project (to resolve version)
+        run: mvn clean verify
+
       - name: Extract version from POM
         id: get_version
         run: |
@@ -34,7 +37,7 @@ jobs:
         run: echo "Using app_version=$VERSION"
 
       - name: Write app version to tfvars file
-        run: echo "app_version = \"${{ env.VERSION }}\"" > terraform/terraform.tfvars
+        run: echo "app_version = \"${{ env.VERSION }}\"" > terraform.tfvars
 
       - name: Terraform Init
         run: terraform init -input=false
