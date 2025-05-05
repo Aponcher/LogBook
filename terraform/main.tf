@@ -63,7 +63,7 @@ resource "aws_security_group" "ecs_security_group" {
     from_port       = 8080
     to_port         = 8080
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]  # only allow traffic from ALB SG
+    security_groups = [aws_security_group.alb_sg.id] # only allow traffic from ALB SG
   }
 
   egress {
@@ -77,7 +77,7 @@ resource "aws_security_group" "ecs_security_group" {
 resource "aws_security_group" "ecs_service" {
   name        = "ecs_service_sg"
   description = "Security group for ECS service"
-  vpc_id      = data.aws_vpc.default.id  # Ensure this matches the VPC ID used for subnets
+  vpc_id      = data.aws_vpc.default.id # Ensure this matches the VPC ID used for subnets
 }
 
 resource "aws_ecs_cluster" "main" {
@@ -144,9 +144,9 @@ resource "aws_ecs_service" "logbook_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = aws_subnet.public[*].id
-    security_groups = [aws_security_group.ecs_security_group.id]
-    assign_public_ip = true  # <--- This is key
+    subnets          = aws_subnet.public[*].id
+    security_groups  = [aws_security_group.ecs_security_group.id]
+    assign_public_ip = true # <--- This is key
   }
 
   load_balancer {
