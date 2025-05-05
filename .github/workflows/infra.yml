@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Mvn install (to resolve version)
-        run: mvn install
+        run: mvn install -DskipTests
 
       - name: Extract version from POM
         id: get_version
