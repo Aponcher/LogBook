@@ -33,6 +33,9 @@ jobs:
       - name: Show version
         run: echo "Using app_version=$VERSION"
 
+      - name: Write app version to tfvars file
+        run: echo "app_version = \"${{ env.VERSION }}\"" > terraform/app_version.auto.tfvars
+
       - name: Terraform Init
         run: terraform init -input=false
         env:
@@ -42,13 +45,13 @@ jobs:
         run: terraform fmt -check
 
       - name: Terraform Plan
-        run: terraform plan -input=false -var="app_version=${{ env.VERSION }}"
+        run: terraform plan -input=false
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -var="app_version=${{ env.VERSION }}"
+        run: terraform apply -auto-approve
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
