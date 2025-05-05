@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Mvn install (to resolve version)
-        run: mvn install -DskipTests
+        run: mvn install --DskipTests
 
       - name: Extract version from POM
         id: get_version
@@ -40,7 +40,7 @@ jobs:
         run: echo "Using app_version=$VERSION"
 
       - name: Write app version to tfvars file
-        run: echo "app_version = \"${{ env.VERSION }}\"" > app_version.auto.tfvars
+        run: echo "app_version = \"${{ env.VERSION }}\"" > terraform/app_version.auto.tfvars
 
       - name: Terraform Init
         run: |
