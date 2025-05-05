@@ -32,8 +32,8 @@ resource "aws_db_instance" "logbook_db" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.default.name
   enabled_cloudwatch_logs_exports = [
-    -"iam-db-auth-error",
-    -"postgresql",
+    "iam-db-auth-error",
+    "postgresql",
   ]
 }
 
