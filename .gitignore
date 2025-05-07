@@ -37,6 +37,7 @@ build/
 */.terraform/
 terraform/.terraform.lock.hcl
 terraform/.terraform/
+terraform/app_version.auto.tfvars
 
 *.tar
 *.log

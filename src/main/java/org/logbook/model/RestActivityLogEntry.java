@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Data
 @Builder
@@ -21,7 +22,7 @@ public class RestActivityLogEntry {
                 .quantity(entry.getQuantity())
                 .timestamp(entry.getTimestamp_utc().toEpochMilli())
                 // TODO Date or Time so that we can do by hour or week or something
-                .localeDate(LocalDate.ofEpochDay(entry.getTimestamp_utc().toEpochMilli()))
+                .localeDate(LocalDate.ofInstant(entry.getTimestamp_utc(), ZoneId.of("America/Chicago")))
                 .build();
     }
 }
