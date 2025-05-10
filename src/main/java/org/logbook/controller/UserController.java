@@ -4,16 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityGoals;
-import org.logbook.model.RestActivityLogEntry;
 import org.logbook.model.UserId;
 import org.logbook.service.ActivityLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -29,6 +25,7 @@ public class UserController {
     @GetMapping("/goals")
     public ResponseEntity<RestActivityGoals> getGoals() {
         // TODO add 'Growth' rate
+        log.info("Getting goals for user");
         return ResponseEntity.ok(
                 RestActivityGoals.initialGoals());
     }
@@ -36,6 +33,7 @@ public class UserController {
     @GetMapping("/today/summary")
     public ResponseEntity<RestActivityGoals> getTodaySummary(
             @RequestParam(required = false) String userId) {
+        log.info("Getting today summary for user");
         Map<ActivityType, Integer> actual =
                 activityLogService.getActivityLogsCountForType(UserId.of(userId));
         return ResponseEntity.ok(RestActivityGoals.todaySummary(actual));
