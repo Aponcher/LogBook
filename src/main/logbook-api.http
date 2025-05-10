@@ -1,14 +1,14 @@
 ### Base URL
-@host = localhost:8080
+#@host = localhost:8080
 # FOR AWS
-#@host = logbook-alb-1951812183.us-east-2.elb.amazonaws.com
+@host = logbook-alb-1951812183.us-east-2.elb.amazonaws.com
 
 ### Get Goals
 GET http://{{host}}/user/goals
 Content-Type: application/json
 
 ### Get Today Summary
-GET http://localhost:8080/user/today/summary
+GET http://{{host}}/user/today/summary
 Content-Type: application/json
 
 ### Get Activities of Type
