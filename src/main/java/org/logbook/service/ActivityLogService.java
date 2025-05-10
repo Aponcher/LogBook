@@ -64,11 +64,15 @@ public class ActivityLogService {
                 .forEach(type ->
                         getActivityLogsForType(type, startTS, endTS, userId)
                                 .ifPresent(logsOfType -> {
-                                    log.info("Found {} logs of type {} for user {}",
+                                    int activityOfType = logsOfType.stream()
+                                            .mapToInt(entry -> (int) entry.getQuantity())
+                                            .sum();
+                                    log.info("User {} did {} sets of type {} for total {}",
+                                            userId,
                                             logsOfType.size(),
                                             type,
-                                            userId);
-                                    actual.put(type, logsOfType.size());
+                                            activityOfType);
+                                    actual.put(type, activityOfType);
                                 }));
         return actual;
     }

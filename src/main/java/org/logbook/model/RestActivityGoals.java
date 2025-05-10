@@ -1,8 +1,6 @@
 package org.logbook.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,12 +20,12 @@ public class RestActivityGoals {
     private Map<ActivityType, Integer> goals;
     private Map<ActivityType, Integer> actual;
 
+    // TODO add a date property and a START_DATE then do some sort of growth
     public static RestActivityGoals initialGoals() {
         return RestActivityGoals.builder().goals(INITIAL_GOALS).build();
     }
 
     public static RestActivityGoals todaySummary(Map<ActivityType, Integer> actual) {
-
         return RestActivityGoals.builder()
                 .goals(INITIAL_GOALS)
                 .actual(actual)
