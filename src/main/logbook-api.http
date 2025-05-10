@@ -4,15 +4,16 @@
 #@host = logbook-alb-1951812183.us-east-2.elb.amazonaws.com
 
 ### Get Goals
-GET http://{{host}}/log/goals
+GET http://{{host}}/user/goals
 Content-Type: application/json
 
 ### Get Today Summary
-GET http://localhost:8080/log/today/summary
+GET http://localhost:8080/user/today/summary
 Content-Type: application/json
 
-### Get Today Summary
-GET http://{{host}}/log/today/summary
+### Get Activities of Type
+@exerciseTypeGet = pushups
+GET http://{{host}}/log/{{exerciseTypeGet}}
 Content-Type: application/json
 
 ### Log N of exerciseType
@@ -23,8 +24,4 @@ Content-Type: application/json
 
 ### Check Health Status
 GET http://{{host}}/actuator/health
-Content-Type: application/json
-
-### Log Exercise
-POST http://{{host}}/log/{{exerciseType}}?quantity={{quantity}}
 Content-Type: application/json

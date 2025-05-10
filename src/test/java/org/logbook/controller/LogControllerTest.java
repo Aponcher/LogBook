@@ -107,7 +107,7 @@ class LogControllerTest {
         when(service.getActivityLogsForType(type, start, end, TEST_USER))
                 .thenReturn(sampleResponse());
 
-        mockMvc.perform(get("/log/{type}", type)
+        mockMvc.perform(get("/log/list/{type}", type)
                         .param("start", start.toString())
                         .param("end", end.toString()))
                 .andExpect(status().isOk())
@@ -123,7 +123,7 @@ class LogControllerTest {
         when(service.getActivityLogsForType(eq(type), any(), eq(end), eq(TEST_USER)))
                 .thenReturn(sampleResponse());
 
-        mockMvc.perform(get("/log/{type}", type)
+        mockMvc.perform(get("/log/list/{type}", type)
                         .param("end", end.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].type").value(type.getValue()));
@@ -137,7 +137,7 @@ class LogControllerTest {
         when(service.getActivityLogsForType(eq(type), eq(start), any(), eq(TEST_USER)))
                 .thenReturn(sampleResponse());
 
-        mockMvc.perform(get("/log/{type}", type)
+        mockMvc.perform(get("/log/list/{type}", type)
                         .param("start", start.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].type").value(type.getValue()));
@@ -152,7 +152,7 @@ class LogControllerTest {
         when(service.getActivityLogsForType(type, start, end, TEST_USER))
                 .thenReturn(Optional.of(List.of()));
 
-        mockMvc.perform(get("/log/{type}", type)
+        mockMvc.perform(get("/log/list/{type}", type)
                         .param("start", start.toString())
                         .param("end", end.toString()))
                 .andExpect(status().isOk())
