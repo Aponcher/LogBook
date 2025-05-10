@@ -20,6 +20,7 @@ public class RestActivityLogEntry {
         return RestActivityLogEntry.builder()
                 .type(entry.getType().getValue())
                 .quantity(entry.getQuantity())
+                .unit(entry.getUnit())
                 .timestamp(entry.getTimestamp_utc().toEpochMilli())
                 // TODO Date or Time so that we can do by hour or week or something
                 .localeDate(LocalDate.ofInstant(entry.getTimestamp_utc(), ZoneId.of("America/Chicago")))

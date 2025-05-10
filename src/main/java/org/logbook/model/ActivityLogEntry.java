@@ -1,19 +1,15 @@
 package org.logbook.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
  * Row in the activity log table.
- * can be a number of different types as defined in the compound key:
- * TYPE with range key
+ * Can represent different types as defined by the ActivityType enum.
  */
 @Entity
 @Table(name = "activity_log")
@@ -29,58 +25,35 @@ public class ActivityLogEntry {
     private ActivityType type;
 
     private long quantity;
-
     private String unit;
-
     private String timestamp;
-
     private Instant timestamp_utc;
 
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    // TODO maybe combine these constructors somehow
     public ActivityLogEntry() {
-        Instant ts = Instant.now();
-        this.timestamp = ts.toString();
-        this.timestamp_utc = ts;
-        this.type = ActivityType.HEALTH_EVALUATION;
-        this.quantity = 5;
-        this.unit = "score";
-        this.userId = "test-user";
+        this(UserId.TEST_USER, ActivityType.HEALTH_EVALUATION, 5, "score");
     }
 
     public ActivityLogEntry(ActivityType type, long quantity) {
-        Instant ts = Instant.now();
-        this.timestamp = ts.toString();
-        this.timestamp_utc = ts;
-        this.type = type;
-        this.quantity = quantity;
-        this.unit = "reps";
-        this.userId = "test-user";
+        this(UserId.TEST_USER, type, quantity, "reps");
     }
 
     public ActivityLogEntry(ActivityType type, long quantity, String unit) {
-        Instant ts = Instant.now();
-        this.timestamp = ts.toString();
-        this.timestamp_utc = ts;
-        this.type = type;
-        this.quantity = quantity;
-        this.unit = unit;
-        this.userId = "test-user";
+        this(UserId.TEST_USER, type, quantity, unit);
     }
 
-    public ActivityLogEntry(ActivityType type,
+    public ActivityLogEntry(UserId userId,
+                            ActivityType type,
                             long quantity,
-                            String unit,
-                            String userId) {
-        Instant ts = Instant.now();
-        this.timestamp = ts.toString();
-        this.timestamp_utc = ts;
+                            String unit) {
+        Instant now = Instant.now();
+        this.userId = userId.getUserId();
+        this.timestamp = now.toString();
+        this.timestamp_utc = now;
         this.type = type;
         this.quantity = quantity;
         this.unit = unit;
-        this.userId = userId;
     }
-
 }

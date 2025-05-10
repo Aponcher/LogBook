@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ActivityType {
     PUSHUPS("pushups"),
     SITUPS("situps"),
+    SQUATS("squats"),
     SLEEP("sleep"),
     SICK("sick"),
     SMOKE("smoke"),

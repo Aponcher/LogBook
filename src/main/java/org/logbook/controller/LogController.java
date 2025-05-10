@@ -1,37 +1,57 @@
 package org.logbook.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.logbook.model.ActivityType;
+import org.logbook.model.RestActivityGoals;
 import org.logbook.model.RestActivityLogEntry;
+import org.logbook.model.UserId;
 import org.logbook.service.ActivityLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/log")
 @AllArgsConstructor
 @CrossOrigin(origins = "*") // loosen later for prod
 public class LogController {
-
-    public static String USER_ID = "test-user"; // TODO move to a table w/ metadata or similar
+    public static ZoneId ZONE_ID = ZoneId.of("America/Chicago");
 
     private final ActivityLogService activityLogService;
+
+    @GetMapping("/goals")
+    public ResponseEntity<RestActivityGoals> getGoals() {
+        // TODO add 'Growth' rate
+        return ResponseEntity.ok(RestActivityGoals.initialGoals());
+    }
+
+    @GetMapping("/today/summary")
+    public ResponseEntity<RestActivityGoals> getTodaySummary(@RequestParam(required = false) String userId) {
+        Map<ActivityType, Integer> actual =
+                activityLogService.getActivityLogsCountForType(UserId.of(userId));
+        return ResponseEntity.ok(RestActivityGoals.todaySummary(actual));
+    }
 
     // TODO another one where its the body instead of the request params ? or maybe a more general one for that
     // TODO add User def so we can have username lookup and such
     @PostMapping("/{type}")
     public ResponseEntity<RestActivityLogEntry> logActivity(
             @PathVariable String type,
+            @RequestParam(required = false) String userId,
             @RequestParam(required = false, defaultValue = "0") long quantity,
             @RequestParam(required = false, defaultValue = "reps") String unit) {
         ActivityType activityType = ActivityType.fromValue(type);
         // TODO prob a better way to do this w/ map and Optional
         return ResponseEntity.ok(
                 activityLogService.logActivity(
+                        UserId.of(userId),
                         activityType,
                         quantity,
                         unit));
@@ -40,6 +60,7 @@ public class LogController {
     @GetMapping("/{type}")
     public ResponseEntity<List<RestActivityLogEntry>> getActivityLogsForType(
             @PathVariable String type,
+            @RequestParam(required = false) String userId,
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant end
     ) {
@@ -55,7 +76,10 @@ public class LogController {
         }
         return ResponseEntity.of(
                 activityLogService.getActivityLogsForType(
-                        ActivityType.fromValue(type), start, end, USER_ID));
+                        ActivityType.fromValue(type),
+                        start,
+                        end,
+                        UserId.of(userId)));
     }
 
     /**
@@ -76,6 +100,7 @@ public class LogController {
     @GetMapping("/{type}/timeSeriesData")
     public ResponseEntity<List<RestActivityLogEntry>> getTimeSeriesActivityLogsForType(
             @PathVariable String type,
+            @RequestParam(required = false) String userId,
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant end,
             @RequestParam(required = false) int interval
@@ -94,7 +119,10 @@ public class LogController {
 
         return ResponseEntity.of(
                 activityLogService.getActivityLogsForType(
-                        ActivityType.fromValue(type), start, end, USER_ID));
+                        ActivityType.fromValue(type),
+                        start,
+                        end,
+                        UserId.of(userId)));
     }
 
     // TODO highchartsTimeSeriesData('type', 'start', 'end', 'interval')
