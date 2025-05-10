@@ -1,13 +1,10 @@
 package org.logbook.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -70,17 +67,17 @@ public class ActivityLogEntry {
         this.userId = "test-user";
     }
 
-    public ActivityLogEntry(ActivityType type,
+    public ActivityLogEntry(UserId userId,
+                            ActivityType type,
                             long quantity,
-                            String unit,
-                            String userId) {
+                            String unit) {
         Instant ts = Instant.now();
         this.timestamp = ts.toString();
         this.timestamp_utc = ts;
         this.type = type;
         this.quantity = quantity;
         this.unit = unit;
-        this.userId = userId;
+        this.userId = userId.getUserId();
     }
 
 }

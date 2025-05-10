@@ -1,7 +1,30 @@
-### Log 10 pushups
-POST http://localhost:8080/log/pushups?quantity=10
+### Base URL
+@host = localhost:8080
+# FOR AWS
+#@host = logbook-alb-1951812183.us-east-2.elb.amazonaws.com
+
+### Get Goals
+GET http://{{host}}/log/goals
 Content-Type: application/json
 
-### Non Local
-GET http://logbook-alb-482933692.us-east-2.elb.amazonaws.com:8080/actuator/health
+### Get Today Summary
+GET http://localhost:8080/log/today/summary
+Content-Type: application/json
+
+### Get Today Summary
+GET http://{{host}}/log/today/summary
+Content-Type: application/json
+
+### Log N of exerciseType
+@exerciseType = pushups
+@quantity = 10
+POST http://{{host}}/log/{{exerciseType}}?quantity={{quantity}}
+Content-Type: application/json
+
+### Check Health Status
+GET http://{{host}}/actuator/health
+Content-Type: application/json
+
+### Log Exercise
+POST http://{{host}}/log/{{exerciseType}}?quantity={{quantity}}
 Content-Type: application/json

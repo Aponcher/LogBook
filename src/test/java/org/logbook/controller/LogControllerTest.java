@@ -12,12 +12,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-import static org.logbook.controller.LogController.USER_ID;
+import static org.logbook.model.UserId.TEST_USER;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,7 +43,7 @@ class LogControllerTest {
                         .build();
                 new ActivityLogEntry(ActivityType.PUSHUPS, 10, "reps");
 
-        when(service.logActivity(any(), anyLong(), anyString()))
+        when(service.logActivity(any(), any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
 
         // NOTE: does not use the optional param 'unit' and doesn't cause an issue
@@ -66,7 +64,7 @@ class LogControllerTest {
                 .unit("hours")
                 .build();
 
-        when(service.logActivity(any(), anyLong(), anyString()))
+        when(service.logActivity(any(), any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
 
         mockMvc.perform(post("/log/sleep?quantity=10&unit=hours"))
@@ -85,7 +83,7 @@ class LogControllerTest {
                 .unit("reps")
                 .build();
 
-        when(service.logActivity(any(), anyLong(), anyString()))
+        when(service.logActivity(any(), any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
         mockMvc.perform(post("/log/ate"))
                 .andExpect(status().isOk())
@@ -106,7 +104,7 @@ class LogControllerTest {
         Instant end = Instant.now();
         Instant start = end.minus(Duration.ofDays(5));
 
-        when(service.getActivityLogsForType(type, start, end, USER_ID))
+        when(service.getActivityLogsForType(type, start, end, TEST_USER))
                 .thenReturn(sampleResponse());
 
         mockMvc.perform(get("/log/{type}", type)
@@ -122,7 +120,7 @@ class LogControllerTest {
         ActivityType type = ActivityType.PUSHUPS;
         Instant end = Instant.now();
 
-        when(service.getActivityLogsForType(eq(type), any(), eq(end), eq(USER_ID)))
+        when(service.getActivityLogsForType(eq(type), any(), eq(end), eq(TEST_USER)))
                 .thenReturn(sampleResponse());
 
         mockMvc.perform(get("/log/{type}", type)
@@ -136,7 +134,7 @@ class LogControllerTest {
         ActivityType type = ActivityType.PUSHUPS;
         Instant start = Instant.now().minus(Duration.ofDays(7));
 
-        when(service.getActivityLogsForType(eq(type), eq(start), any(), eq(USER_ID)))
+        when(service.getActivityLogsForType(eq(type), eq(start), any(), eq(TEST_USER)))
                 .thenReturn(sampleResponse());
 
         mockMvc.perform(get("/log/{type}", type)
@@ -151,7 +149,7 @@ class LogControllerTest {
         Instant end = Instant.now().minus(Duration.ofDays(29));
         Instant start = end.minus(Duration.ofDays(1));
 
-        when(service.getActivityLogsForType(type, start, end, USER_ID))
+        when(service.getActivityLogsForType(type, start, end, TEST_USER))
                 .thenReturn(Optional.of(List.of()));
 
         mockMvc.perform(get("/log/{type}", type)
