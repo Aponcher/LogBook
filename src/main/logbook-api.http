@@ -1,3 +1,7 @@
 ### Log 10 pushups
 POST http://localhost:8080/log/pushups?quantity=10
 Content-Type: application/json
+
+### Non Local
+GET http://logbook-alb-482933692.us-east-2.elb.amazonaws.com:8080/actuator/health
+Content-Type: application/json
