@@ -22,7 +22,6 @@ import java.util.Map;
 @AllArgsConstructor
 @CrossOrigin(origins = "*") // loosen later for prod
 public class LogController {
-    public static ZoneId ZONE_ID = ZoneId.of("America/Chicago");
 
     private final ActivityLogService activityLogService;
 
@@ -57,7 +56,7 @@ public class LogController {
                         unit));
     }
 
-    @GetMapping("/{type}")
+    @GetMapping("list/{type}")
     public ResponseEntity<List<RestActivityLogEntry>> getActivityLogsForType(
             @PathVariable String type,
             @RequestParam(required = false) String userId,

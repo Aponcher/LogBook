@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.logbook.controller.LogController.ZONE_ID;
+import static org.logbook.controller.UserController.ZONE_ID;
 
 @Slf4j
 @Service
