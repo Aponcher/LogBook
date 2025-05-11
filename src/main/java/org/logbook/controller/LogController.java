@@ -25,19 +25,6 @@ public class LogController {
 
     private final ActivityLogService activityLogService;
 
-    @GetMapping("/goals")
-    public ResponseEntity<RestActivityGoals> getGoals() {
-        // TODO add 'Growth' rate
-        return ResponseEntity.ok(RestActivityGoals.initialGoals());
-    }
-
-    @GetMapping("/today/summary")
-    public ResponseEntity<RestActivityGoals> getTodaySummary(@RequestParam(required = false) String userId) {
-        Map<ActivityType, Integer> actual =
-                activityLogService.getActivityLogsCountForType(UserId.of(userId));
-        return ResponseEntity.ok(RestActivityGoals.todaySummary(actual));
-    }
-
     // TODO another one where its the body instead of the request params ? or maybe a more general one for that
     // TODO add User def so we can have username lookup and such
     @PostMapping("/{type}")
