@@ -51,9 +51,9 @@ Local Development
 API Endpoints (Sample)
 ----------------------
 
-- POST /api/logs/pushups — Add a pushup log
-- POST /api/logs/thought — Add a free-form text entry (in-progress)
-- GET /api/logs/{type} — Fetch logs by type
+- POST /api/log/pushups — Add a pushup log
+- POST /api/log/thought — Add a free-form text entry (in-progress)
+- GET /api/log/{type} — Fetch logs by type
 
 Authentication/authorization is not enforced yet (roadmap item).
 
