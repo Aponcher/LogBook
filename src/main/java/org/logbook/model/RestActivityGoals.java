@@ -18,20 +18,20 @@ public class RestActivityGoals {
 
     public static final Map<ActivityType, Integer> INITIAL_GOALS =
             Map.of(
-            ActivityType.PUSHUPS, 25,
-            ActivityType.SITUPS, 25,
-            ActivityType.SQUATS, 10);
+                    ActivityType.PUSHUPS, 25,
+                    ActivityType.SITUPS, 25,
+                    ActivityType.SQUATS, 10);
 
     private Map<ActivityType, Integer> goals;
     private Map<ActivityType, Integer> actual;
 
     public static RestActivityGoals initialGoals() {
-        int multiplier = (int) ChronoUnit.WEEKS.between(START_DATE, LocalDate.now());
+        int multiplier = Math.max((int) ChronoUnit.WEEKS.between(START_DATE, LocalDate.now()), 1);
         return RestActivityGoals.builder().goals(getCurrentGoals(multiplier)).build();
     }
 
     public static RestActivityGoals todaySummary(Map<ActivityType, Integer> actual) {
-        int multiplier = (int) ChronoUnit.WEEKS.between(START_DATE, LocalDate.now());
+        int multiplier = Math.max((int) ChronoUnit.WEEKS.between(START_DATE, LocalDate.now()), 1);
         return RestActivityGoals.builder()
                 .goals(getCurrentGoals(multiplier))
                 .actual(actual)
