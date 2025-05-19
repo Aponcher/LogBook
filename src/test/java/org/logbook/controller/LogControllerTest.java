@@ -34,7 +34,7 @@ class LogControllerTest {
 
     // Happy Path
     @Test
-    void testLogPushups() throws Exception {
+    void logPushups_happyPath() throws Exception {
         RestActivityLogEntry mockLog =
                 RestActivityLogEntry.builder()
                         .type(ActivityType.PUSHUPS.getValue())
@@ -56,7 +56,7 @@ class LogControllerTest {
 
     // Happy path: sleep
     @Test
-    void testLogSleep() throws Exception {
+    void logSleep_happyPath() throws Exception {
         RestActivityLogEntry mockLog =
                 RestActivityLogEntry.builder()
                 .type(ActivityType.SLEEP.getValue())
@@ -76,7 +76,7 @@ class LogControllerTest {
 
     // MEH Path: Missing required param could still be an activity we want to log but of specific types
     @Test
-    void testLogEmptyRequest() throws Exception {
+    void logEmptyRequest() throws Exception {
         RestActivityLogEntry mockLog = RestActivityLogEntry.builder()
                 .type(ActivityType.ATE.getValue())
                 .quantity(0L)
@@ -93,7 +93,7 @@ class LogControllerTest {
     }
 
     @Test
-    void testLogBadRequestType() throws Exception {
+    void logBadRequestType() throws Exception {
         mockMvc.perform(post("/log/badType"))
                 .andExpect(status().isBadRequest());
     }

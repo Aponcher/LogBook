@@ -3,7 +3,6 @@ package org.logbook.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.logbook.model.ActivityType;
-import org.logbook.model.RestActivityGoals;
 import org.logbook.model.RestActivityLogEntry;
 import org.logbook.model.UserId;
 import org.logbook.service.ActivityLogService;
@@ -12,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -34,7 +31,6 @@ public class LogController {
             @RequestParam(required = false, defaultValue = "0") long quantity,
             @RequestParam(required = false, defaultValue = "reps") String unit) {
         ActivityType activityType = ActivityType.fromValue(type);
-        // TODO prob a better way to do this w/ map and Optional
         return ResponseEntity.ok(
                 activityLogService.logActivity(
                         UserId.of(userId),
@@ -77,10 +73,9 @@ public class LogController {
      * | `/api/chart/scatterseries`  | XY data like speed vs heart rate      | `scatter`, `bubble`  |
      * | `/api/chart/timeline`       | Event timeline, e.g., workouts logged | `timeline`           |
      *
-     *
-     * @param type Type of activity log to retrieve
+     * @param type  Type of activity log to retrieve
      * @param start Timestamp of the start of the time range
-     * @param end Timestamp of the end of the time range
+     * @param end   Timestamp of the end of the time range
      * @return timeseries data for rendering in Highcharts
      */
     @GetMapping("/{type}/timeSeriesData")

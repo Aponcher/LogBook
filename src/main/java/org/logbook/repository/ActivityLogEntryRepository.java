@@ -25,7 +25,8 @@ public interface ActivityLogEntryRepository extends JpaRepository<ActivityLogEnt
             AND l.timestamp_utc BETWEEN :start AND :end
         ORDER BY l.timestamp_utc ASC
     """)
-    // TODO Pagination ? at what point does it become a concern, write as paginations anyway for scaleability
+    // TODO Pagination ? at what point does it become a concern,
+    //  write as paginations anyway for scaleability
     List<ActivityLogEntry> findByActivityTypeAndTimeRange(
             @Param("activityType") ActivityType activityType,
             @Param("start") Instant start,

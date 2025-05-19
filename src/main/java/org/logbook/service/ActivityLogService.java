@@ -31,7 +31,7 @@ public class ActivityLogService {
             ActivityType type,
             long quantity,
             String unit) {
-        log.info("Logging activity: {} {} {} {}", userId, type, quantity, unit);
+        log.info("{}: Logging activity: {} {} {}", userId, type, quantity, unit);
         // TODO no need to break up into types but i'd like some business logic to add here maybe validation or some such
         ActivityLogEntry savedEntry =
                 activityLogEntryRepository.save(
@@ -40,7 +40,8 @@ public class ActivityLogService {
                                 type,
                                 quantity,
                                 unit));
-        log.debug("[AUDIT]: {} {} {} {}", userId, type, quantity, unit);
+        log.debug("[AUDIT]: {} {} {} {}",
+                savedEntry.getId(), savedEntry.getType(), savedEntry.getQuantity(), savedEntry.getUnit());
 
         return RestActivityLogEntry.fromActivityLogEntry(savedEntry);
     }
