@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.logbook</groupId>
     <artifactId>LogBook</artifactId>
-    <version>0.0.16-SNAPSHOT</version>
+    <version>0.0.17-SNAPSHOT</version>
     <name>LogBook</name>
     <description>LogBook</description>
     <url/>
