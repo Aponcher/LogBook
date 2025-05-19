@@ -5,6 +5,7 @@ import org.logbook.model.ActivityLogEntry;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityLogEntry;
 import org.logbook.service.ActivityLogService;
+import org.logbook.service.HighchartsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,6 +32,9 @@ class LogControllerTest {
 
     @MockitoBean
     private ActivityLogService service;
+    
+    @MockitoBean
+    private HighchartsService highchartsService;
 
     // Happy Path
     @Test
@@ -41,7 +45,7 @@ class LogControllerTest {
                         .quantity(10)
                         .unit("reps")
                         .build();
-                new ActivityLogEntry(ActivityType.PUSHUPS, 10, "reps");
+        new ActivityLogEntry(ActivityType.PUSHUPS, 10, "reps");
 
         when(service.logActivity(any(), any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
@@ -59,10 +63,10 @@ class LogControllerTest {
     void logSleep_happyPath() throws Exception {
         RestActivityLogEntry mockLog =
                 RestActivityLogEntry.builder()
-                .type(ActivityType.SLEEP.getValue())
-                .quantity(3)
-                .unit("hours")
-                .build();
+                        .type(ActivityType.SLEEP.getValue())
+                        .quantity(3)
+                        .unit("hours")
+                        .build();
 
         when(service.logActivity(any(), any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
