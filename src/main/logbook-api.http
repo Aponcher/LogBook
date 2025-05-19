@@ -1,7 +1,7 @@
 ### Base URL
-#@host = localhost:8080
+@host = localhost:8080
 # FOR AWS
-@host = logbook-alb-1951812183.us-east-2.elb.amazonaws.com
+#@host = logbook-alb-1951812183.us-east-2.elb.amazonaws.com
 
 ### Get Goals
 GET http://{{host}}/user/goals
@@ -14,6 +14,11 @@ Content-Type: application/json
 ### Get Activities of Type
 @exerciseTypeGet = pushups
 GET http://{{host}}/log/{{exerciseTypeGet}}
+Content-Type: application/json
+
+
+### Get Time Series Data for Activities of Type
+GET http://{{host}}/log/{{exerciseTypeGet}}/timeSeriesData
 Content-Type: application/json
 
 ### Log N of exerciseType

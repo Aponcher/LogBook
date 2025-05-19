@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityLogEntry;
 import org.logbook.model.UserId;
+import org.logbook.model.highcharts.RestChartOptions;
 import org.logbook.service.ActivityLogService;
+import org.logbook.service.HighchartsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,7 @@ import java.util.List;
 public class LogController {
 
     private final ActivityLogService activityLogService;
+    private final HighchartsService highchartsService;
 
     // TODO another one where its the body instead of the request params ? or maybe a more general one for that
     // TODO add User def so we can have username lookup and such
@@ -65,13 +68,7 @@ public class LogController {
     }
 
     /**
-     * | Endpoint                    | Purpose                               | Chart Type Example   |
-     * | --------------------------- | ------------------------------------- | -------------------- |
-     * | `/api/chart/timeseries`     | Line/area/time-series by date         | `line`, `area`       |
-     * | `/api/chart/categoryseries` | Category-based bar/column data        | `bar`, `column`      |
-     * | `/api/chart/rangeseries`    | Ranges with high/low values           | `range`, `arearange` |
-     * | `/api/chart/scatterseries`  | XY data like speed vs heart rate      | `scatter`, `bubble`  |
-     * | `/api/chart/timeline`       | Event timeline, e.g., workouts logged | `timeline`           |
+     * Highcharts timeseries data for a given type of activity log and time range
      *
      * @param type  Type of activity log to retrieve
      * @param start Timestamp of the start of the time range
@@ -79,12 +76,12 @@ public class LogController {
      * @return timeseries data for rendering in Highcharts
      */
     @GetMapping("/{type}/timeSeriesData")
-    public ResponseEntity<List<RestActivityLogEntry>> getTimeSeriesActivityLogsForType(
+    public ResponseEntity<RestChartOptions> getTimeSeriesActivityLogsForType(
             @PathVariable String type,
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant end,
-            @RequestParam(required = false) int interval
+            @RequestParam(required = false) Integer interval
     ) {
         // TODO if start/end is null then use some default values like last week
         if (start == null || end == null) {
@@ -98,15 +95,13 @@ public class LogController {
         }
         // TODO change this to HighchartsTimeSeriesDataResponse
 
-        return ResponseEntity.of(
-                activityLogService.getActivityLogsForType(
-                        ActivityType.fromValue(type),
-                        start,
-                        end,
-                        UserId.of(userId)));
+        RestChartOptions restChartOptions = highchartsService.buildTimeSeriesChart(
+                UserId.of(userId),
+                ActivityType.fromValue(type),
+                start,
+                end);
+        return ResponseEntity.ok(restChartOptions);
     }
-
-    // TODO highchartsTimeSeriesData('type', 'start', 'end', 'interval')
 
     // TODO log free form log (OpenSearch so we can fuzy search and such)
 
