@@ -2,8 +2,8 @@ package org.logbook.model.highcharts;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Collections;
@@ -14,6 +14,7 @@ import java.util.List;
  * so it can be passed easily to UI.
  */
 @Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChartSeries {
 
@@ -37,6 +38,7 @@ public class ChartSeries {
 
     /**
      * Unifies the data property into a single list so UI can reference it regardless of type.
+     *
      * @return List of data points
      */
     @JsonProperty("data")

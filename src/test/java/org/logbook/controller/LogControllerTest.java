@@ -5,6 +5,7 @@ import org.logbook.model.ActivityLogEntry;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityLogEntry;
 import org.logbook.service.ActivityLogService;
+import org.logbook.service.HighchartsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,17 +32,20 @@ class LogControllerTest {
 
     @MockitoBean
     private ActivityLogService service;
+    
+    @MockitoBean
+    private HighchartsService highchartsService;
 
     // Happy Path
     @Test
-    void testLogPushups() throws Exception {
+    void logPushups_happyPath() throws Exception {
         RestActivityLogEntry mockLog =
                 RestActivityLogEntry.builder()
                         .type(ActivityType.PUSHUPS.getValue())
                         .quantity(10)
                         .unit("reps")
                         .build();
-                new ActivityLogEntry(ActivityType.PUSHUPS, 10, "reps");
+        new ActivityLogEntry(ActivityType.PUSHUPS, 10, "reps");
 
         when(service.logActivity(any(), any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
@@ -56,13 +60,13 @@ class LogControllerTest {
 
     // Happy path: sleep
     @Test
-    void testLogSleep() throws Exception {
+    void logSleep_happyPath() throws Exception {
         RestActivityLogEntry mockLog =
                 RestActivityLogEntry.builder()
-                .type(ActivityType.SLEEP.getValue())
-                .quantity(3)
-                .unit("hours")
-                .build();
+                        .type(ActivityType.SLEEP.getValue())
+                        .quantity(3)
+                        .unit("hours")
+                        .build();
 
         when(service.logActivity(any(), any(), anyLong(), anyString()))
                 .thenReturn(mockLog);
@@ -76,7 +80,7 @@ class LogControllerTest {
 
     // MEH Path: Missing required param could still be an activity we want to log but of specific types
     @Test
-    void testLogEmptyRequest() throws Exception {
+    void logEmptyRequest() throws Exception {
         RestActivityLogEntry mockLog = RestActivityLogEntry.builder()
                 .type(ActivityType.ATE.getValue())
                 .quantity(0L)
@@ -93,7 +97,7 @@ class LogControllerTest {
     }
 
     @Test
-    void testLogBadRequestType() throws Exception {
+    void logBadRequestType() throws Exception {
         mockMvc.perform(post("/log/badType"))
                 .andExpect(status().isBadRequest());
     }

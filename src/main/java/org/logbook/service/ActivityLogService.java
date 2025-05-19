@@ -31,7 +31,7 @@ public class ActivityLogService {
             ActivityType type,
             long quantity,
             String unit) {
-        log.info("Logging activity: {} {} {} {}", userId, type, quantity, unit);
+        log.info("{}: Logging activity: {} {} {}", userId, type, quantity, unit);
         // TODO no need to break up into types but i'd like some business logic to add here maybe validation or some such
         ActivityLogEntry savedEntry =
                 activityLogEntryRepository.save(
@@ -40,7 +40,8 @@ public class ActivityLogService {
                                 type,
                                 quantity,
                                 unit));
-        log.debug("[AUDIT]: {} {} {} {}", userId, type, quantity, unit);
+        log.debug("[AUDIT]: {} {} {} {}",
+                savedEntry.getId(), savedEntry.getType(), savedEntry.getQuantity(), savedEntry.getUnit());
 
         return RestActivityLogEntry.fromActivityLogEntry(savedEntry);
     }
@@ -49,9 +50,9 @@ public class ActivityLogService {
             ActivityType type, Instant start, Instant end, UserId userId) {
         return Optional.of(
                 activityLogEntryRepository.findByActivityTypeAndTimeRange(type, start, end, userId.getUserId())
-                .stream()
-                .map(RestActivityLogEntry::fromActivityLogEntry)
-                .toList());
+                        .stream()
+                        .map(RestActivityLogEntry::fromActivityLogEntry)
+                        .toList());
     }
 
     public Map<ActivityType, Integer> getActivityLogsCountForType(UserId userId) {
@@ -77,30 +78,3 @@ public class ActivityLogService {
         return actual;
     }
 }
-
-
-//public RestChartOptions buildTimeSeriesChart(String activityType, Instant start, Instant end) {
-//        List<LogEntry> logs = logEntryRepository.findByActivityTypeAndTimeRange(activityType, start, end);
-//
-//        List<String> categories = logs.stream()
-//            .map(entry -> entry.getTimestamp().toString()) // or format as "MM-dd"
-//            .toList();
-//
-//        List<Integer> values = logs.stream()
-//            .map(LogEntry::getValue)
-//            .toList();
-//
-//        RestChartOptions chart = new RestChartOptions();
-//        chart.setTitle("Activity Over Time");
-//        chart.setType("line");
-//        chart.setCategories(categories);
-//        chart.setSeries(List.of(Map.of(
-//            "name", activityType,
-//            "data", values
-//        )));
-//        chart.setChart(Map.of("type", "line"));
-//        chart.setXAxis(Map.of("categories", categories));
-//        chart.setYAxis(Map.of("title", Map.of("text", "Count")));
-//
-//        return chart;
-//    }
