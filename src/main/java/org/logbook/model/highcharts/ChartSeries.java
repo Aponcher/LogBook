@@ -26,6 +26,7 @@ public class ChartSeries {
     private String type;
     // TODO nullable or just dont include
     // e.g., "Dash", "Solid"
+    @JsonProperty("dashStyle")
     private String dashStyle;
 
     // for column, bar, category

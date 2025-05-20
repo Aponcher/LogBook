@@ -40,7 +40,8 @@ public class HighchartsService {
             UserId userId,
             ActivityType activityType,
             Instant start,
-            Instant end) {
+            Instant end,
+            String chartType) {
         List<RestActivityLogEntry> activityLogsForType = logService.getActivityLogsForType(
                         activityType,
                         start,
@@ -66,14 +67,14 @@ public class HighchartsService {
 
         RestChartOptions chart = new RestChartOptions();
         chart.setTitle(String.format("%s over time", activityType));
-        chart.setType("line");
+        chart.setType(chartType);
         chart.setSeries(List.of(ChartSeries.builder()
                 .name(activityType.toString())
                 .dataXY(values)
                 .build()));
-        chart.setChart(ChartChart.builder().type("line").build());
-        chart.setXAxis(ChartAxis.builder().type("datetime").build());
-        chart.setYAxis(ChartAxis.builder().title("count").build());
+        chart.setChart(ChartChart.builder().type(chartType).build());
+        chart.setXAxis(ChartAxis.builder().title(ChartTitle.of("Time")).type("datetime").build());
+        chart.setYAxis(ChartAxis.builder().title(ChartTitle.of(activityLogsForType.getFirst().getUnit())).build());
 
         return chart;
     }
