@@ -1,6 +1,7 @@
 package org.logbook.model.highcharts;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class ChartAxis {
     private List<String> categories;
     // "datetime", "category"
     private String type;
+    @JsonProperty("tickInterval")
     private String tickInterval;
     private String format;
 }
