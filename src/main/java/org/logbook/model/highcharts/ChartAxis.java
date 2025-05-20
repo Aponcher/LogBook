@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChartAxis {
-    private String title;
+    private ChartTitle title;
     private List<String> categories;
     // "datetime", "category"
     private String type;

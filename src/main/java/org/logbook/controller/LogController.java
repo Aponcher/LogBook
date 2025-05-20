@@ -49,7 +49,6 @@ public class LogController {
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant end
     ) {
-        // TODO if start/end is null then use some default values like last week
         if (start == null || end == null) {
             Instant ts = Instant.now();
             if (start == null) {
@@ -81,9 +80,9 @@ public class LogController {
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant end,
-            @RequestParam(required = false) Integer interval
+            @RequestParam(required = false) Integer interval,
+            @RequestParam(required = false, defaultValue = "line") String chartType
     ) {
-        // TODO if start/end is null then use some default values like last week
         if (start == null || end == null) {
             Instant ts = Instant.now();
             if (start == null) {
@@ -93,13 +92,13 @@ public class LogController {
                 end = ts;
             }
         }
-        // TODO change this to HighchartsTimeSeriesDataResponse
 
         RestChartOptions restChartOptions = highchartsService.buildTimeSeriesChart(
                 UserId.of(userId),
                 ActivityType.fromValue(type),
                 start,
-                end);
+                end,
+                chartType);
         return ResponseEntity.ok(restChartOptions);
     }
 
