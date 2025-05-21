@@ -12,6 +12,12 @@ terraform {
       name = "logbook-infra"
     }
   }
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "4.48.0"
+    }
+  }
 }
 
 provider "cloudflare" {
@@ -21,8 +27,8 @@ provider "cloudflare" {
 
 resource "cloudflare_record" "api_tunnel" {
   zone_id = data.cloudflare_zones.primary[0].id
-  name    = "api"                                                   # this makes api.alponcher.us
-  value   = "72a5873f-2982-4c97-899c-52441c6b6e37.cfargotunnel.com" # replace with your actual tunnel hostname
+  name    = "api" # this makes api.alponcher.us
+  id      = "72a5873f-2982-4c97-899c-52441c6b6e37"
   type    = "CNAME"
   ttl     = 300
   proxied = true
