@@ -24,8 +24,20 @@ provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
 
+resource "cloudflare_record" "api_cert_validation" {
+  depends_on = [aws_acm_certificate.api_cert]
+
+  zone_id = data.cloudflare_zones.primary.id
+  name    = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_name
+  type    = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_type
+  content = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_value
+  ttl     = 300
+}
+
+
 resource "aws_acm_certificate_validation" "cert_validation" {
-  certificate_arn = aws_acm_certificate.api_cert.arn
+  certificate_arn         = aws_acm_certificate.api_cert.arn
+  validation_record_fqdns = [cloudflare_record.api_cert_validation.hostname]
 }
 
 resource "cloudflare_record" "acm_validation" {
@@ -41,7 +53,7 @@ resource "cloudflare_record" "acm_validation" {
   zone_id = data.cloudflare_zones.primary.id
   name    = each.value.name
   type    = each.value.type
-  value   = each.value.value
+  content = each.value.value
   ttl     = 120
 }
 
@@ -56,7 +68,8 @@ resource "cloudflare_record" "api_tunnel" {
 
 data "cloudflare_zones" "primary" {
   filter {
-    name = "alponcher.us"
+    name   = "alponcher.us"
+    status = "active"
   }
 }
 
