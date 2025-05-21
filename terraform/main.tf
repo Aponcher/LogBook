@@ -21,14 +21,34 @@ terraform {
 }
 
 provider "cloudflare" {
-  email   = "aponcher@mac.com"
-  api_key = "wWlWjFA09HsW8naEaenZI2ZLVd2hZbAMO5XpDlij"
+  api_token = var.cloudflare_api_token
+}
+
+resource "aws_acm_certificate_validation" "cert_validation" {
+  certificate_arn = aws_acm_certificate.api_cert.arn
+}
+
+resource "cloudflare_record" "acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.api_cert.domain_validation_options :
+    dvo.domain_name => {
+      name  = dvo.resource_record_name
+      type  = dvo.resource_record_type
+      value = dvo.resource_record_value
+    }
+  }
+
+  zone_id = data.cloudflare_zones.primary.id
+  name    = each.value.name
+  type    = each.value.type
+  value   = each.value.value
+  ttl     = 120
 }
 
 resource "cloudflare_record" "api_tunnel" {
-  zone_id = data.cloudflare_zones.primary[0].id
-  name    = "api" # this makes api.alponcher.us
-  id      = "72a5873f-2982-4c97-899c-52441c6b6e37"
+  zone_id = data.cloudflare_zones.primary.id
+  name    = "api"
+  content = "72a5873f-2982-4c97-899c-52441c6b6e37.cfargotunnel.com"
   type    = "CNAME"
   ttl     = 300
   proxied = true
