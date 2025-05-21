@@ -63,7 +63,7 @@ resource "cloudflare_record" "api_tunnel" {
   content = "72a5873f-2982-4c97-899c-52441c6b6e37.cfargotunnel.com"
   type    = "CNAME"
   ttl     = 300
-  proxied = true
+  proxied = false
 }
 
 data "cloudflare_zones" "primary" {

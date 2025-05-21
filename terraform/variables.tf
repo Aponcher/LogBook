@@ -35,5 +35,5 @@ variable "aws_account_id" {
 variable "cloudflare_api_token" {
   description = "Cloudflare api token Id"
   type        = string
-  default     = "wWlWjFA09HsW8naEaenZI2ZLVd2hZbAMO5XpDlij"
+  default     = "I_-ToGAS__zRf_DYvdZvfjjjTtdU_ZZvwLarGVeo"
 }
