@@ -72,14 +72,6 @@ resource "aws_acm_certificate" "api_cert" {
   }
 }
 
-resource "aws_route53_record" "api_cert_validation" {
-  name    = aws_acm_certificate.api_cert.domain_validation_options[0].resource_record_name
-  type    = aws_acm_certificate.api_cert.domain_validation_options[0].resource_record_type
-  zone_id = data.aws_route53_zone.main.zone_id
-  records = [aws_acm_certificate.api_cert.domain_validation_options[0].resource_record_value]
-  ttl     = 300
-}
-
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.logbook_alb.arn
   port              = 443
