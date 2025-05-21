@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.logbook.controller.UserController.ZONE_ID;
 
@@ -52,6 +49,7 @@ public class ActivityLogService {
                 activityLogEntryRepository.findByActivityTypeAndTimeRange(type, start, end, userId.getUserId())
                         .stream()
                         .map(RestActivityLogEntry::fromActivityLogEntry)
+                        .sorted(Comparator.comparingLong(RestActivityLogEntry::getTimestamp).reversed())
                         .toList());
     }
 

@@ -14,6 +14,26 @@ terraform {
   }
 }
 
+provider "cloudflare" {
+  email   = "aponcher@mac.com"
+  api_key = "wWlWjFA09HsW8naEaenZI2ZLVd2hZbAMO5XpDlij"
+}
+
+resource "cloudflare_record" "api_tunnel" {
+  zone_id = data.cloudflare_zones.primary[0].id
+  name    = "api"                                                   # this makes api.alponcher.us
+  value   = "72a5873f-2982-4c97-899c-52441c6b6e37.cfargotunnel.com" # replace with your actual tunnel hostname
+  type    = "CNAME"
+  ttl     = 300
+  proxied = true
+}
+
+data "cloudflare_zones" "primary" {
+  filter {
+    name = "alponcher.us"
+  }
+}
+
 resource "aws_lb" "logbook_alb" {
   name               = "logbook-alb"
   internal           = false
@@ -43,6 +63,36 @@ resource "aws_lb_target_group" "logbook_tg" {
   }
 }
 
+resource "aws_acm_certificate" "api_cert" {
+  domain_name       = "api.alponcher.us"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "api_cert_validation" {
+  name    = aws_acm_certificate.api_cert.domain_validation_options[0].resource_record_name
+  type    = aws_acm_certificate.api_cert.domain_validation_options[0].resource_record_type
+  zone_id = data.aws_route53_zone.main.zone_id
+  records = [aws_acm_certificate.api_cert.domain_validation_options[0].resource_record_value]
+  ttl     = 300
+}
+
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.logbook_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = aws_acm_certificate.api_cert.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.logbook_tg.arn
+  }
+}
+
 resource "aws_lb_listener" "logbook_listener" {
   load_balancer_arn = aws_lb.logbook_alb.arn
   port              = 80
@@ -51,6 +101,22 @@ resource "aws_lb_listener" "logbook_listener" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.logbook_tg.arn
+  }
+}
+
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.logbook_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
