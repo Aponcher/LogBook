@@ -49,6 +49,23 @@ resource "cloudflare_record" "public_api" {
   proxied = false
 }
 
+resource "cloudflare_record" "ui" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "ui"
+  type    = "CNAME"
+  content = "silly-fenglisu-5601d3.netlify.app"
+  proxied = false
+}
+
+# Proves ownership of netlify via static token
+resource "cloudflare_record" "ui_netlify_verification" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "netlify-challenge" # Subdomain is included here
+  type    = "TXT"
+  content = "IrmuiFOi_9DuUFoIOK4N5"
+  ttl     = 600
+}
+
 resource "cloudflare_record" "acm_validation" {
   for_each = {
     for dvo in aws_acm_certificate.api_cert.domain_validation_options :
