@@ -37,6 +37,6 @@ output "alb_listeners" {
   description = "List of ALB listener ARNs."
 }
 
-output "dns_records" {
-  value = cloudflare_record.api_cert_validation
+output "domain_validation_options" {
+  value = aws_acm_certificate.api_cert.domain_validation_options
 }
