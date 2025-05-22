@@ -28,20 +28,8 @@ output "primary_zones_id" {
   value = data.cloudflare_zones.primary.zones[0].id
 }
 
-resource "cloudflare_record" "api_cert_validation" {
-  depends_on = [aws_acm_certificate.api_cert]
-
-  zone_id = data.cloudflare_zones.primary.zones[0].id
-  name    = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_name
-  type    = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_type
-  content = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_value
-  ttl     = 300
-}
-
-
 resource "aws_acm_certificate_validation" "cert_validation" {
-  certificate_arn         = aws_acm_certificate.api_cert.arn
-  validation_record_fqdns = [cloudflare_record.api_cert_validation.hostname]
+  certificate_arn = aws_acm_certificate.api_cert.arn
 }
 
 resource "cloudflare_record" "acm_validation" {
