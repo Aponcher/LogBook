@@ -1,10 +1,13 @@
 name: Terraform Infra
 
+permissions:
+  pull-requests: write
+
 on:
   push:
-    branches: [main, dev]
+    branches: [ main, dev ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
     paths:
       - 'terraform/*.tf'  # Trigger only when .tf files are modified
 
