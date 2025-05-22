@@ -24,10 +24,18 @@ provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
 
+output "primary_zones_id" {
+  value = data.cloudflare_zones.primary.zones[0].id
+}
+
+output "primary_z_id" {
+  value = data.cloudflare_zones.primary.id
+}
+
 resource "cloudflare_record" "api_cert_validation" {
   depends_on = [aws_acm_certificate.api_cert]
 
-  zone_id = data.cloudflare_zones.primary.id
+  zone_id = data.cloudflare_zones.primary.zones[0].id
   name    = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_name
   type    = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_type
   content = tolist(aws_acm_certificate.api_cert.domain_validation_options)[0].resource_record_value
@@ -50,7 +58,7 @@ resource "cloudflare_record" "acm_validation" {
     }
   }
 
-  zone_id = data.cloudflare_zones.primary.id
+  zone_id = data.cloudflare_zones.primary.zones[0].id
   name    = each.value.name
   type    = each.value.type
   content = each.value.value
@@ -58,7 +66,7 @@ resource "cloudflare_record" "acm_validation" {
 }
 
 resource "cloudflare_record" "api_tunnel" {
-  zone_id = data.cloudflare_zones.primary.id
+  zone_id = data.cloudflare_zones.primary.zones[0].id
   name    = "api"
   content = "72a5873f-2982-4c97-899c-52441c6b6e37.cfargotunnel.com"
   type    = "CNAME"
@@ -68,9 +76,12 @@ resource "cloudflare_record" "api_tunnel" {
 
 data "cloudflare_zones" "primary" {
   filter {
-    name   = "alponcher.us"
-    status = "active"
+    name = "alponcher.us"
   }
+}
+
+output "cert_validation_dns" {
+  value = aws_acm_certificate.api_cert.domain_validation_options
 }
 
 resource "aws_lb" "logbook_alb" {
@@ -108,6 +119,7 @@ resource "aws_acm_certificate" "api_cert" {
 
   lifecycle {
     create_before_destroy = true
+    prevent_destroy       = true
   }
 }
 
