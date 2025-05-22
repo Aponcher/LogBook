@@ -33,6 +33,6 @@ output "alb_arn" {
 }
 
 output "alb_listeners" {
-  value       = aws_lb_listener.logbook_listener.*.arn
+  value       = aws_lb_listener.https.*.arn
   description = "List of ALB listener ARNs."
 }
