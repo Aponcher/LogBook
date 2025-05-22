@@ -36,3 +36,7 @@ output "alb_listeners" {
   value       = aws_lb_listener.https.*.arn
   description = "List of ALB listener ARNs."
 }
+
+output "dns_records" {
+  value = cloudflare_record.api_cert_validation
+}

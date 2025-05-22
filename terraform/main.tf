@@ -28,10 +28,6 @@ output "primary_zones_id" {
   value = data.cloudflare_zones.primary.zones[0].id
 }
 
-output "primary_z_id" {
-  value = data.cloudflare_zones.primary.id
-}
-
 resource "cloudflare_record" "api_cert_validation" {
   depends_on = [aws_acm_certificate.api_cert]
 
