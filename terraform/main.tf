@@ -29,7 +29,24 @@ output "primary_zones_id" {
 }
 
 resource "aws_acm_certificate_validation" "cert_validation" {
-  certificate_arn = aws_acm_certificate.api_cert.arn
+  certificate_arn         = aws_acm_certificate.api_cert.arn
+  validation_record_fqdns = [for record in cloudflare_record.acm_validation : record.hostname]
+}
+
+resource "cloudflare_record" "api" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "api"
+  type    = "CNAME"
+  content = aws_lb.logbook_alb.dns_name
+  proxied = false
+}
+
+resource "cloudflare_record" "public_api" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "public-api"
+  type    = "CNAME"
+  content = aws_lb.logbook_alb.dns_name
+  proxied = false
 }
 
 resource "cloudflare_record" "acm_validation" {
@@ -47,15 +64,6 @@ resource "cloudflare_record" "acm_validation" {
   type    = each.value.type
   content = each.value.value
   ttl     = 120
-}
-
-resource "cloudflare_record" "api_tunnel" {
-  zone_id = data.cloudflare_zones.primary.zones[0].id
-  name    = "api"
-  content = "72a5873f-2982-4c97-899c-52441c6b6e37.cfargotunnel.com"
-  type    = "CNAME"
-  ttl     = 300
-  proxied = false
 }
 
 data "cloudflare_zones" "primary" {

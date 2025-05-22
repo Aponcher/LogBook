@@ -40,3 +40,8 @@ output "alb_listeners" {
 output "domain_validation_options" {
   value = aws_acm_certificate.api_cert.domain_validation_options
 }
+
+output "acm_validation_fqdns" {
+  value       = [for record in cloudflare_record.acm_validation : record.hostname]
+  description = "ACM validation FQDNs created in Cloudflare"
+}
