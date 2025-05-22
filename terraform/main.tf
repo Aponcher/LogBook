@@ -29,7 +29,24 @@ output "primary_zones_id" {
 }
 
 resource "aws_acm_certificate_validation" "cert_validation" {
-  certificate_arn = aws_acm_certificate.api_cert.arn
+  certificate_arn         = aws_acm_certificate.api_cert.arn
+  validation_record_fqdns = [for record in cloudflare_record.acm_validation : record.hostname]
+}
+
+resource "cloudflare_record" "api" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "api"
+  type    = "CNAME"
+  content = aws_lb.logbook_alb.dns_name
+  proxied = false
+}
+
+resource "cloudflare_record" "public_api" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "public-api"
+  type    = "CNAME"
+  content = aws_lb.logbook_alb.dns_name
+  proxied = false
 }
 
 resource "cloudflare_record" "acm_validation" {
@@ -49,15 +66,6 @@ resource "cloudflare_record" "acm_validation" {
   ttl     = 120
 }
 
-resource "cloudflare_record" "api_tunnel" {
-  zone_id = data.cloudflare_zones.primary.zones[0].id
-  name    = "api"
-  content = "72a5873f-2982-4c97-899c-52441c6b6e37.cfargotunnel.com"
-  type    = "CNAME"
-  ttl     = 300
-  proxied = false
-}
-
 data "cloudflare_zones" "primary" {
   filter {
     name = "alponcher.us"
@@ -73,7 +81,7 @@ resource "aws_lb" "logbook_alb" {
   internal           = false
   load_balancer_type = "application"
   subnets            = aws_subnet.public[*].id
-  security_groups    = [aws_security_group.alb_sg.id]
+  security_groups = [aws_security_group.alb_sg.id]
 }
 
 output "alb_dns_name" {
@@ -142,16 +150,16 @@ resource "aws_security_group" "ecs_security_group" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    from_port       = 8080
-    to_port         = 8080
-    protocol        = "tcp"
+    from_port = 8080
+    to_port   = 8080
+    protocol  = "tcp"
     security_groups = [aws_security_group.alb_sg.id] # only allow traffic from ALB SG
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -167,13 +175,13 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_ecs_task_definition" "logbook" {
-  family                   = "logbook-task"
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
-  network_mode             = "awsvpc"
+  family             = "logbook-task"
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
+  network_mode       = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 512
-  memory                   = 1024
+  cpu                = 512
+  memory             = 1024
 
   container_definitions = jsonencode([
     {
@@ -228,7 +236,7 @@ resource "aws_ecs_service" "logbook_service" {
 
   network_configuration {
     subnets          = aws_subnet.public[*].id
-    security_groups  = [aws_security_group.ecs_security_group.id]
+    security_groups = [aws_security_group.ecs_security_group.id]
     assign_public_ip = true # <--- This is key
   }
 
