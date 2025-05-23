@@ -1,0 +1,16 @@
+package org.logbook.repository;
+
+import org.logbook.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * Repository for User entity authorization and metadata.
+ */
+public interface UserRepository extends JpaRepository<User, UUID> {
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByUsername(String username);
+}

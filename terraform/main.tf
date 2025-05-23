@@ -63,7 +63,7 @@ resource "cloudflare_record" "ui_netlify_verification" {
   name    = "netlify-challenge" # Subdomain is included here
   type    = "TXT"
   content = "IrmuiFOi_9DuUFoIOK4N5"
-  ttl     = 600
+  ttl     = 300
 }
 
 resource "cloudflare_record" "acm_validation" {
