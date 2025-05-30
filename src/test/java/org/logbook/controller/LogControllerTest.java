@@ -1,12 +1,13 @@
 package org.logbook.controller;
 
 import org.junit.jupiter.api.Test;
-import org.logbook.config.SecurityConfig;
+import org.logbook.config.TestSecurityConfig;
 import org.logbook.model.ActivityLogEntry;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityLogEntry;
 import org.logbook.service.ActivityLogService;
 import org.logbook.service.HighchartsService;
+import org.logbook.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LogController.class)
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 class LogControllerTest {
 
     @Autowired
@@ -35,6 +36,9 @@ class LogControllerTest {
 
     @MockitoBean
     private ActivityLogService service;
+    
+    @MockitoBean
+    private JwtService jwtService;
 
     @MockitoBean
     private HighchartsService highchartsService;

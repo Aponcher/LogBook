@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.logbook.model.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -45,6 +46,11 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, User user) {
+        final String userId = extractUserId(token);
+        return userId.equals(user.getUsername()) && !isTokenExpired(token);
+    }
+
+    public boolean isTokenValid(String token, UserDetails user) {
         final String userId = extractUserId(token);
         return userId.equals(user.getUsername()) && !isTokenExpired(token);
     }

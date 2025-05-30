@@ -48,6 +48,17 @@ Local Development
 
    http://localhost:8080/api
 
+## Authentication Setup
+
+To test endpoints locally:
+
+1. Register a user via `POST /user/register`
+2. Login via `POST /user/login` to receive a JWT token.
+3. Use the token in an `Authorization: Bearer <token>` header for protected requests like `/user/summary`.
+
+You can use the included `.http` file for easy testing.
+
+
 API Endpoints (Sample)
 ----------------------
 

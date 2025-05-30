@@ -32,23 +32,13 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
         log.info("Received Register request for user {}", registrationRequest.username());
-        try {
-            return ResponseEntity.ok(userService.register(registrationRequest));
-        } catch (Exception e) {
-            // TODO maybe better way to do this
-            return ResponseEntity.badRequest().body(null);
-        }
+        return ResponseEntity.ok(userService.register(registrationRequest));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody UserAuthRequest authRequest) {
         log.info("Received Auth request for user {}", authRequest.usernameOrEmail());
-        try {
-            return ResponseEntity.ok(userService.login(authRequest));
-        } catch (Exception e) {
-            // TODO maybe better way to do this
-            return ResponseEntity.badRequest().body(null);
-        }
+        return ResponseEntity.ok(userService.login(authRequest));
     }
 
     @GetMapping("/goals")

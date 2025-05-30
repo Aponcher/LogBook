@@ -1,32 +1,52 @@
 ### Base URL
 @host = localhost:8080
 # FOR AWS
-#@host = logbook-alb-1951812183.us-east-2.elb.amazonaws.com
+#@host = api.alponcher.us
+
+### Register
+POST https://{{host}}/user/register
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "password": "secure123"
+}
+
+### Login
+POST https://{{host}}/user/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "secure123"
+}
+
 
 ### Get Goals
-GET http://{{host}}/user/goals
+GET https://{{host}}/user/goals
 Content-Type: application/json
 
 ### Get Today Summary
-GET http://{{host}}/user/today/summary
+GET https://{{host}}/user/today/summary
 Content-Type: application/json
 
 ### Get Activities of Type
 @exerciseTypeGet = pushups
-GET http://{{host}}/log/{{exerciseTypeGet}}
+GET https://{{host}}/log/{{exerciseTypeGet}}
 Content-Type: application/json
 
 
 ### Get Time Series Data for Activities of Type
-GET http://{{host}}/log/{{exerciseTypeGet}}/timeSeriesData
+GET https://{{host}}/log/{{exerciseTypeGet}}/timeSeriesData
 Content-Type: application/json
 
 ### Log N of exerciseType
 @exerciseType = pushups
 @quantity = 10
-POST http://{{host}}/log/{{exerciseType}}?quantity={{quantity}}
+POST https://{{host}}/log/{{exerciseType}}?quantity={{quantity}}
 Content-Type: application/json
 
 ### Check Health Status
-GET http://{{host}}/actuator/health
+GET https://{{host}}/actuator/health
 Content-Type: application/json
