@@ -5,7 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityGoals;
 import org.logbook.model.UserId;
+import org.logbook.model.dto.AuthResponse;
+import org.logbook.model.dto.UserAuthRequest;
+import org.logbook.model.dto.UserRegistrationRequest;
 import org.logbook.service.ActivityLogService;
+import org.logbook.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +27,29 @@ public class UserController {
     public static LocalDate START_DATE = LocalDate.of(2025, 5, 19);
 
     private final ActivityLogService activityLogService;
+    private final UserService userService;
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
+        log.info("Received Register request for user {}", registrationRequest.username());
+        try {
+            return ResponseEntity.ok(userService.register(registrationRequest));
+        } catch (Exception e) {
+            // TODO maybe better way to do this
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody UserAuthRequest authRequest) {
+        log.info("Received Auth request for user {}", authRequest.usernameOrEmail());
+        try {
+            return ResponseEntity.ok(userService.login(authRequest));
+        } catch (Exception e) {
+            // TODO maybe better way to do this
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     @GetMapping("/goals")
     public ResponseEntity<RestActivityGoals> getGoals(@RequestParam(required = false) String userId) {

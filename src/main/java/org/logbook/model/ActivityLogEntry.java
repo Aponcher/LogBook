@@ -49,7 +49,7 @@ public class ActivityLogEntry {
                             long quantity,
                             String unit) {
         Instant now = Instant.now();
-        this.userId = userId.getUserId();
+        this.userId = userId.userId();
         this.timestamp = now.toString();
         this.timestamp_utc = now;
         this.type = type;

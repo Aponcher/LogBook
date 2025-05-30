@@ -12,14 +12,14 @@ class UserIdTest {
     void testOf() {
         String expectedId = "aponcher";
         UserId userId = UserId.of(expectedId);
-        assertEquals(expectedId, userId.getUserId());
+        assertEquals(expectedId, userId.userId());
     }
 
     @Test
     void testOf_nullFallback() {
         UserId userId = UserId.of(null);
         assertEquals(TEST_USER, userId);
-        assertEquals(TEST_USER_ID, userId.getUserId());
+        assertEquals(TEST_USER_ID, userId.userId());
     }
 
 }

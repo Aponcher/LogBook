@@ -1,4 +1,6 @@
 package org.logbook.model.dto;
 
-public record AuthResponse(String token) {
+import org.logbook.model.UserId;
+
+public record AuthResponse(UserId userId, String token) {
 }

@@ -31,7 +31,7 @@ public class UserService {
      * @param request UserRegistrationRequest with username, email and password.
      * @return User registered in DB.
      */
-    public User register(UserRegistrationRequest request) {
+    public AuthResponse register(UserRegistrationRequest request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -49,7 +49,9 @@ public class UserService {
 
         log.info("Registering user {} with email {}", request.username(), request.email());
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        String token = jwtService.generateToken(savedUser);
+        return new AuthResponse(UserId.of(savedUser.getUsername()), token);
     }
 
     /**
@@ -69,7 +71,7 @@ public class UserService {
         }
 
         String token = jwtService.generateToken(userByUsernameOrEmail);
-        return new AuthResponse(token);
+        return new AuthResponse(UserId.of(userByUsernameOrEmail.getUsername()), token);
     }
 
     /**
@@ -98,7 +100,7 @@ public class UserService {
      * @return User found in DB.
      */
     private User findUserByUsernameOrEmail(UserId usernameOrEmail) {
-        String usernameOrEmailStr = usernameOrEmail.getUserId();
+        String usernameOrEmailStr = usernameOrEmail.userId();
         if (usernameOrEmailStr.contains("@")) {
             return userRepository.findByEmail(usernameOrEmailStr)
                     .orElseThrow(() -> new IllegalArgumentException("No User with Email in use"));

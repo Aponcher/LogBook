@@ -46,7 +46,7 @@ public class ActivityLogService {
     public Optional<List<RestActivityLogEntry>> getActivityLogsForType(
             ActivityType type, Instant start, Instant end, UserId userId) {
         return Optional.of(
-                activityLogEntryRepository.findByActivityTypeAndTimeRange(type, start, end, userId.getUserId())
+                activityLogEntryRepository.findByActivityTypeAndTimeRange(type, start, end, userId.userId())
                         .stream()
                         .map(RestActivityLogEntry::fromActivityLogEntry)
                         .sorted(Comparator.comparingLong(RestActivityLogEntry::getTimestamp).reversed())
