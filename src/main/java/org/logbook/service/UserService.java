@@ -48,6 +48,7 @@ public class UserService {
         user.setEnabled(true);
 
         log.info("Registering user {} with email {}", request.username(), request.email());
+        log.info("[AUDIT] Registering user {} ", user);
 
         User savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser);
@@ -61,17 +62,17 @@ public class UserService {
      * @return AuthResponse with JWT token.
      */
     public AuthResponse login(UserAuthRequest request) {
-        log.info("login request for '{}'", request.usernameOrEmail());
+        log.info("login request for '{}'", request.id());
         // TODO i don't really need to wrap it in UserId but i don't like passing around a bunch of strings i like 'typed' strings
-        User userByUsernameOrEmail = findUserByUsernameOrEmail(UserId.of(request.usernameOrEmail()));
+        User foundUser = findUserByUsernameOrEmail(UserId.of(request.id()));
 
-        if (!passwordEncoder.matches(request.password(), userByUsernameOrEmail.getPassword())) {
-            log.warn("Password did not match for user {}", request.usernameOrEmail());
+        if (!passwordEncoder.matches(request.password(), foundUser.getPassword())) {
+            log.warn("Password did not match for user {}", request.id());
             throw new BadCredentialsException("Invalid credentials");
         }
 
-        String token = jwtService.generateToken(userByUsernameOrEmail);
-        return new AuthResponse(UserId.of(userByUsernameOrEmail.getUsername()), token);
+        String token = jwtService.generateToken(foundUser);
+        return new AuthResponse(UserId.of(foundUser.getUsername()), token);
     }
 
     /**

@@ -1,52 +1,64 @@
 ### Base URL
-@host = localhost:8080
+@host = http://localhost:8080
 # FOR AWS
-#@host = api.alponcher.us
+#@host = https://api.alponcher.us
 
 ### Register
-POST https://{{host}}/user/register
+POST {{host}}/user/register
 Content-Type: application/json
 
 {
-  "username": "alice",
-  "email": "alice@example.com",
+  "username": "aliceb",
+  "email": "aliceb@example.com",
   "password": "secure123"
 }
+
+> {%
+    client.global.set("auth_token", response.body.token);
+%}
 
 ### Login
-POST https://{{host}}/user/login
+POST {{host}}/user/login
 Content-Type: application/json
 
 {
-  "username": "alice",
+  "id": "aliceb",
   "password": "secure123"
 }
-
+> {%
+    client.global.set("auth_token", response.body.token);
+%}
 
 ### Get Goals
-GET https://{{host}}/user/goals
+GET {{host}}/user/goals
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 ### Get Today Summary
-GET https://{{host}}/user/today/summary
+GET {{host}}/user/today/summary
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 ### Get Activities of Type
 @exerciseTypeGet = pushups
-GET https://{{host}}/log/{{exerciseTypeGet}}
+GET {{host}}/log/{{exerciseTypeGet}}
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 
 ### Get Time Series Data for Activities of Type
-GET https://{{host}}/log/{{exerciseTypeGet}}/timeSeriesData
+GET {{host}}/log/{{exerciseTypeGet}}/timeSeriesData
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 ### Log N of exerciseType
 @exerciseType = pushups
 @quantity = 10
-POST https://{{host}}/log/{{exerciseType}}?quantity={{quantity}}
+POST {{host}}/log/{{exerciseType}}?quantity={{quantity}}
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 ### Check Health Status
-GET https://{{host}}/actuator/health
+GET {{host}}/actuator/health
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}

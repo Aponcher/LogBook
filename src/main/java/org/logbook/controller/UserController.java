@@ -37,7 +37,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody UserAuthRequest authRequest) {
-        log.info("Received Auth request for user {}", authRequest.usernameOrEmail());
+        log.info("Received Auth request for user {}", authRequest.id());
         return ResponseEntity.ok(userService.login(authRequest));
     }
 
