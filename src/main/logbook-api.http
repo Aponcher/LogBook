@@ -8,8 +8,8 @@ POST {{host}}/user/register
 Content-Type: application/json
 
 {
-  "username": "aliceb",
-  "email": "aliceb@example.com",
+  "username": "alice",
+  "email": "alice@example.com",
   "password": "secure123"
 }
 
