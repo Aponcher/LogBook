@@ -21,7 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
-@CrossOrigin(origins = "*") // loosen later for prod
 public class UserController {
     public static ZoneId ZONE_ID = ZoneId.of("America/Chicago");
     public static LocalDate START_DATE = LocalDate.of(2025, 5, 19);

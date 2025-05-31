@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/log")
 @AllArgsConstructor
-@CrossOrigin(origins = "*") // loosen later for prod
 public class LogController {
 
     private final ActivityLogService activityLogService;

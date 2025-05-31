@@ -22,8 +22,8 @@ POST {{host}}/user/login
 Content-Type: application/json
 
 {
-  "id": "aliceb",
-  "password": "secure123"
+  "id": "aponcher@mac.com",
+  "password": "abc"
 }
 > {%
     client.global.set("auth_token", response.body.token);
