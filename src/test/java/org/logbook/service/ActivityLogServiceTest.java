@@ -65,7 +65,7 @@ class ActivityLogServiceTest {
         );
 
         when(repository.findByActivityTypeAndTimeRange(
-                eq(pushupsType), any(Instant.class), any(Instant.class), eq(userId.getUserId())))
+                eq(pushupsType), any(Instant.class), any(Instant.class), eq(userId.userId())))
                 .thenReturn(mockPushupEntries);
 
         List<ActivityLogEntry> mockSitupEntries = List.of(
@@ -74,7 +74,7 @@ class ActivityLogServiceTest {
         );
 
         when(repository.findByActivityTypeAndTimeRange(
-                eq(situpsType), any(Instant.class), any(Instant.class), eq(userId.getUserId())))
+                eq(situpsType), any(Instant.class), any(Instant.class), eq(userId.userId())))
                 .thenReturn(mockSitupEntries);
 
         Map<ActivityType, Integer> result = service.getActivityLogsCountForType(userId);
