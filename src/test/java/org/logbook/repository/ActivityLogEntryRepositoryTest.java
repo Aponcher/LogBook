@@ -8,6 +8,7 @@ import org.logbook.model.ActivityType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -35,6 +36,7 @@ class ActivityLogEntryRepositoryIntegrationTest {
     private ActivityLogEntryRepository logbookRepository;
 
     @Test
+    @WithMockUser(username = "test-user")
     public void testInsertAndFetch() {
 
         logbookRepository.saveAll(

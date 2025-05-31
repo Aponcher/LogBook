@@ -5,12 +5,12 @@ import org.logbook.config.TestSecurityConfig;
 import org.logbook.model.ActivityLogEntry;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityLogEntry;
-import org.logbook.service.ActivityLogService;
-import org.logbook.service.HighchartsService;
-import org.logbook.service.JwtService;
+import org.logbook.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,7 +28,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LogController.class)
-@Import(TestSecurityConfig.class)
+@Import({
+        TestSecurityConfig.class,
+        UserDetailService.class,
+//        JwtService.class,
+//        HighchartsService.class,
+//        ActivityLogService.class
+})
+@AutoConfigureMockMvc
 class LogControllerTest {
 
     @Autowired
@@ -36,15 +43,22 @@ class LogControllerTest {
 
     @MockitoBean
     private ActivityLogService service;
-    
+
     @MockitoBean
     private JwtService jwtService;
 
     @MockitoBean
     private HighchartsService highchartsService;
 
+    @MockitoBean
+    private UserService userService;
+    
+    @MockitoBean
+    private UserDetailService userDetailService;
+
     // Happy Path
     @Test
+    @WithMockUser(username = "test-user")
     void logPushups_happyPath() throws Exception {
         RestActivityLogEntry mockLog =
                 RestActivityLogEntry.builder()
@@ -67,6 +81,7 @@ class LogControllerTest {
 
     // Happy path: sleep
     @Test
+    @WithMockUser(username = "test-user")
     void logSleep_happyPath() throws Exception {
         RestActivityLogEntry mockLog =
                 RestActivityLogEntry.builder()
@@ -87,6 +102,7 @@ class LogControllerTest {
 
     // MEH Path: Missing required param could still be an activity we want to log but of specific types
     @Test
+    @WithMockUser(username = "test-user")
     void logEmptyRequest() throws Exception {
         RestActivityLogEntry mockLog = RestActivityLogEntry.builder()
                 .type(ActivityType.ATE.getValue())
@@ -104,12 +120,14 @@ class LogControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "test-user")
     void logBadRequestType() throws Exception {
         mockMvc.perform(post("/log/badType"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
+    @WithMockUser(username = "test-user")
     void getLogs_withStartAndEnd_returns200() throws Exception {
         ActivityType type = ActivityType.PUSHUPS;
         Instant end = Instant.now();
@@ -127,6 +145,7 @@ class LogControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "test-user")
     void getLogs_withoutStart_usesDefaultStart_returns200() throws Exception {
         ActivityType type = ActivityType.PUSHUPS;
         Instant end = Instant.now();
@@ -141,6 +160,7 @@ class LogControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "test-user")
     void getLogs_withoutEnd_usesNowAsEnd_returns200() throws Exception {
         ActivityType type = ActivityType.PUSHUPS;
         Instant start = Instant.now().minus(Duration.ofDays(7));
@@ -155,6 +175,7 @@ class LogControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "test-user")
     void getLogs_withNoResults_returnsEmptyList() throws Exception {
         ActivityType type = ActivityType.PUSHUPS;
         Instant end = Instant.now().minus(Duration.ofDays(29));

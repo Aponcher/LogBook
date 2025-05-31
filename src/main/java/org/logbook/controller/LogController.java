@@ -5,14 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.logbook.model.ActivityType;
 import org.logbook.model.RestActivityLogEntry;
 import org.logbook.model.UserId;
-import org.logbook.model.UserWrapper;
 import org.logbook.model.highcharts.RestChartOptions;
 import org.logbook.service.ActivityLogService;
 import org.logbook.service.HighchartsService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -31,10 +30,10 @@ public class LogController {
     @PostMapping("/{type}")
     public ResponseEntity<RestActivityLogEntry> logActivity(
             @PathVariable String type,
-            @AuthenticationPrincipal UserWrapper userWrapper,
+            Principal principal,
             @RequestParam(required = false, defaultValue = "0") long quantity,
             @RequestParam(required = false, defaultValue = "reps") String unit) {
-        String username = userWrapper.getUsername();
+        String username = principal.getName();
         ActivityType activityType = ActivityType.fromValue(type);
         return ResponseEntity.ok(
                 activityLogService.logActivity(
@@ -47,7 +46,7 @@ public class LogController {
     @GetMapping("list/{type}")
     public ResponseEntity<List<RestActivityLogEntry>> getActivityLogsForType(
             @PathVariable String type,
-            @AuthenticationPrincipal UserWrapper userWrapper,
+            Principal principal,
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant end
     ) {
@@ -60,7 +59,7 @@ public class LogController {
                 end = ts;
             }
         }
-        String username = userWrapper.getUsername();
+        String username = principal.getName();
         return ResponseEntity.of(
                 activityLogService.getActivityLogsForType(
                         ActivityType.fromValue(type),
@@ -80,7 +79,7 @@ public class LogController {
     @GetMapping("/{type}/timeSeriesData")
     public ResponseEntity<RestChartOptions> getTimeSeriesActivityLogsForType(
             @PathVariable String type,
-            @AuthenticationPrincipal UserWrapper userWrapper,
+            Principal principal,
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant end,
             @RequestParam(required = false) Integer interval,
@@ -95,7 +94,7 @@ public class LogController {
                 end = ts;
             }
         }
-        String username = userWrapper.getUsername();
+        String username = principal.getName();
         RestChartOptions restChartOptions = highchartsService.buildTimeSeriesChart(
                 UserId.of(username),
                 ActivityType.fromValue(type),
