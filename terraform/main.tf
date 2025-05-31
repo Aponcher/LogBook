@@ -114,10 +114,10 @@ resource "aws_lb_target_group" "logbook_tg" {
   target_type = "ip"
   health_check {
     path                = "/actuator/health"
-    interval            = 30
+    interval            = 50
     timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    healthy_threshold   = 5
+    unhealthy_threshold = 5
     matcher             = "200-399"
   }
 }
