@@ -1,7 +1,7 @@
 ### Base URL
-@host = http://localhost:8080
+#@host = http://localhost:8080
 # FOR AWS
-#@host = https://api.alponcher.us
+@host = https://api.alponcher.us
 
 ### Register
 POST {{host}}/user/register
