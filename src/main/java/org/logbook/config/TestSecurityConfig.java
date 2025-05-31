@@ -23,9 +23,4 @@ public class TestSecurityConfig {
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
         return http.build();
     }
-
-//    @Bean
-//    public UserDetailService userDetailService(UserRepository userRepository) {
-//        return new UserDetailService(userRepository);
-//    }
 }
