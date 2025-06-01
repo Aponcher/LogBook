@@ -11,6 +11,7 @@ import org.logbook.model.dto.UserRegistrationRequest;
 import org.logbook.service.ActivityLogService;
 import org.logbook.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -32,6 +33,7 @@ public class UserController {
     @GetMapping("/whoAmI")
     public ResponseEntity<String> whoAmI(Principal principal) {
         log.info("Received WhoAmI request for user {}", principal.getName());
+        log.info("User: {}", SecurityContextHolder.getContext().getAuthentication().getName());
         return ResponseEntity.ok(principal.getName());
     }
 
