@@ -63,6 +63,6 @@ GET {{host}}/actuator/health
 Content-Type: application/json
 
 ### Check Health Status
-GET http://api.alponcher.us/actuator/health
+GET https://api.alponcher.us/actuator/health
 Content-Type: application/json
 #Authorization: Bearer {{auth_token}}
