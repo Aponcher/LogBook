@@ -123,3 +123,4 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           aws apprunner start-deployment --service-arn "$APPRUNNER_ARN" --region us-east-2
+          
