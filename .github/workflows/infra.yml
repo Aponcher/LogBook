@@ -115,9 +115,11 @@ jobs:
       - name: Get App Runner Service ARN
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         id: get_apprunner_arn
-        working-directory: terraform
         run: |
+          cd terraform
           echo "APPRUNNER_ARN=$(terraform output -raw apprunner_service_arn)" >> $GITHUB_ENV
+        env:
+          TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
       - name: Trigger App Runner Deploy
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
