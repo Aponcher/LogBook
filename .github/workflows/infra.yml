@@ -16,6 +16,8 @@ jobs:
   terraform:
     name: 'Terraform Plan/Apply'
     runs-on: ubuntu-latest
+    env:
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -60,8 +62,6 @@ jobs:
         run: |
           cd terraform
           terraform init -input=false
-        env:
-          TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Format Check
         run: |
@@ -79,8 +79,6 @@ jobs:
           cd terraform
           terraform plan -input=false -no-color > plan.txt
           cat plan.txt
-        env:
-          TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
       - name: Comment Terraform Plan on PR
         if: github.event_name == 'pull_request'
@@ -109,15 +107,15 @@ jobs:
         run: |
           cd terraform
           terraform apply -auto-approve
-        env:
-          TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
-
+        
       - name: Get App Runner Service ARN
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         id: get_apprunner_arn
-        working-directory: terraform
         run: |
+          cd terraform
           echo "APPRUNNER_ARN=$(terraform output -raw apprunner_service_arn)" >> $GITHUB_ENV
+        env:
+          TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
       - name: Trigger App Runner Deploy
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
