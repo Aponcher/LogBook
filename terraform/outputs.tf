@@ -1,7 +1,3 @@
-output "ecs_cluster_id" {
-  value = aws_ecs_cluster.main.id
-}
-
 output "cloudflare_zone_id" {
   value       = data.cloudflare_zones.primary.zones[0].id
   description = "The Cloudflare Zone ID used for DNS record creation."
@@ -12,36 +8,39 @@ output "cloudflare_zone_name" {
   description = "The Cloudflare zone name fetched by the data source."
 }
 
-output "aws_acm_certificate_arn" {
-  value       = aws_acm_certificate.api_cert.arn
-  description = "The ARN of the ACM certificate."
+output "primary_zones_id" {
+  value = data.cloudflare_zones.primary.zones[0].id
 }
 
-output "aws_acm_certificate_status" {
-  value       = aws_acm_certificate.api_cert.status
-  description = "The current status of the ACM certificate."
+output "db_endpoint" {
+  value = aws_db_instance.logbook_db.endpoint
 }
 
-output "aws_acm_certificate_domain_validation_options" {
-  value       = aws_acm_certificate.api_cert.domain_validation_options
-  description = "Details about the ACM certificate domain validation options."
+output "db_username" {
+  value = aws_db_instance.logbook_db.username
 }
 
-output "alb_arn" {
-  value       = aws_lb.logbook_alb.arn
-  description = "The ARN of the Application Load Balancer."
+
+output "vpc_id" {
+  value = data.aws_vpc.default.id
 }
 
-output "alb_listeners" {
-  value       = aws_lb_listener.https.*.arn
-  description = "List of ALB listener ARNs."
+output "public_subnets" {
+  value = aws_subnet.public[*].id
 }
 
-output "domain_validation_options" {
-  value = aws_acm_certificate.api_cert.domain_validation_options
+output "vpc_cidr_block" {
+  value = data.aws_vpc.default.cidr_block
 }
 
-output "acm_validation_fqdns" {
-  value       = [for record in cloudflare_record.acm_validation : record.hostname]
-  description = "ACM validation FQDNs created in Cloudflare"
+output "subnet_vpc_ids" {
+  value = aws_subnet.public[*].vpc_id
+}
+
+output "apprunner_url" {
+  value = aws_apprunner_service.logbook.service_url
+}
+
+output "apprunner_service_arn" {
+  value = aws_apprunner_service.logbook.arn
 }

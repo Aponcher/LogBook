@@ -21,6 +21,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Configure AWS credentials
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -104,3 +112,15 @@ jobs:
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
+      - name: Get App Runner Service ARN
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        id: get_apprunner_arn
+        working-directory: terraform
+        run: |
+          echo "APPRUNNER_ARN=$(terraform output -raw apprunner_service_arn)" >> $GITHUB_ENV
+
+      - name: Trigger App Runner Deploy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          aws apprunner start-deployment --service-arn "$APPRUNNER_ARN" --region us-east-2
+          
