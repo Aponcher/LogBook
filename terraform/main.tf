@@ -49,11 +49,38 @@ resource "cloudflare_record" "api" {
   proxied = false
 }
 
+resource "cloudflare_record" "api" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "api"
+  type    = "CNAME"
+  content = "7ryjii6mmh.us-east-2.awsapprunner.com"
+  proxied = false
+  ttl     = 300
+}
+
 resource "cloudflare_record" "public_api" {
   zone_id = data.cloudflare_zones.primary.zones[0].id
   name    = "public-api"
   type    = "CNAME"
   content = replace(aws_apprunner_service.logbook.service_url, "https://", "")
+  proxied = false
+}
+
+resource "cloudflare_record" "apprunner_cert_validation_1" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "_8ced244e70f0a97536615198c28e6d75.api"
+  type    = "CNAME"
+  content = "_3dc223ab6b0eeb9331e798d61357acb7.xlfgrmvvlj.acm-validations.aws."
+  ttl     = 300
+  proxied = false
+}
+
+resource "cloudflare_record" "apprunner_cert_validation_2" {
+  zone_id = data.cloudflare_zones.primary.zones[0].id
+  name    = "_a3a022d50a34ac7d68d4e8f6ce932851.2a57j788yh3tg66dfta7rkrte9mhdcl.api"
+  type    = "CNAME"
+  content = "_1650bc4c67dd1ebfb69619acad7b669b.xlfgrmvvlj.acm-validations.aws."
+  ttl     = 300
   proxied = false
 }
 
