@@ -49,15 +49,6 @@ resource "cloudflare_record" "api" {
   proxied = false
 }
 
-resource "cloudflare_record" "api" {
-  zone_id = data.cloudflare_zones.primary.zones[0].id
-  name    = "api"
-  type    = "CNAME"
-  content = "7ryjii6mmh.us-east-2.awsapprunner.com"
-  proxied = false
-  ttl     = 300
-}
-
 resource "cloudflare_record" "public_api" {
   zone_id = data.cloudflare_zones.primary.zones[0].id
   name    = "public-api"
